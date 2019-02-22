@@ -1,1 +1,1 @@
-# shop_model
+# this is a shop for vue
