@@ -27,3 +27,4 @@
    再拉取分支上的代码： git branch --set-upstream-to=origin/dev
 24.将最新提交的代码从远程分支上抓下来(当前分支)： git pull
 25.修改远程仓库地址： git remote set-url origin ‘URL’
+26.想删掉它又担心以后需要查看它的代码，想保存它但又不想增加一个脏的提交（git储藏）：git stash  
