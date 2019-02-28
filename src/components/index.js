@@ -13,11 +13,18 @@ import GoodsList from './GoodsList';
 import NumberInput from './NumberInput';
 import EmptyHint from './EmptyHint';
 import Checkbox from './Checkbox';
+import Radio from './Radio';
 
 import Button from './Button';
 
 import CellList from './CellList';
 import Cell from './Cell';
+import Share from './Share';
+import RegionPicker from './RegionPicker';
+import Popup from './Popup';
+import SelectPopup from './SelectPopup';
+
+import M_button from './M_button';
 
 Vue.component('c-header', Header);
 
@@ -38,3 +45,11 @@ Vue.component('c-button', Button);
 
 Vue.component('c-cell-list', CellList);
 Vue.component('c-cell', Cell);
+
+Vue.component('c-popup', Popup);
+Vue.component('c-select-popup', SelectPopup);
+Vue.component('c-region-picker', RegionPicker);
+Vue.component('c-share', Share);
+
+Vue.component('m-button', M_button);
+Vue.component('c-radio', Radio);

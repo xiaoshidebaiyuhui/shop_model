@@ -27,7 +27,7 @@ input:disabled {
 .gcs-checkbox {
   display: none;
 }
-label{
+label {
   margin-right: 0.05rem;
 }
 .gcs-checkbox + label {
@@ -49,15 +49,28 @@ label{
   content: "\2714";
   color: white;
 }
-.pay{
-  background:#fff;margin-top:0.1rem;padding:0.1rem;display:flex;align-items: center;
+.pay {
+  background: #fff;
+  // margin-top: 0.1rem;
+  padding: 0.1rem;
+  display: flex;
+  align-items: center;
 }
-.icon-weixin1{
-font-size:0.3rem;padding-right:0.1rem;color:#09BB07;
+.icon-weixin1 {
+  font-size: 0.3rem;
+  padding-right: 0.1rem;
+  color: #09bb07;
 }
-.icon-zhifubao{
-  font: size 0.18rem;padding-right:0.1rem;
-  color: #00A1E9;
+.icon-zhifubao {
+  font-size: 0.17rem;
+  padding-right: 0.1rem;
+  color: #00a1e9;
+}
+.icon-xuanzhong {
+  color: $color-primary;
+}
+.icon-weixuanzhong {
+  color: #e7e7e7;
 }
 </style>
 <template>
@@ -67,54 +80,69 @@ font-size:0.3rem;padding-right:0.1rem;color:#09BB07;
       <ul>
         <li>
           <span>当前余额</span>
-          <span>￥2.15</span>
-          <input disabled>
+          <span>￥{{userInfo.balance}}</span>
         </li>
         <li>
           <span>充值金额</span>
           <span>￥</span>
-          <input class="recharge_num" type="number">
+          <input class="recharge_num" type="number" v-model="amount">
         </li>
       </ul>
-       <!--微信支付  -->
-       <div class="pay" style="">
-          <i class="iconfont icon-weixin1" style=""></i>
-          <div  style="width:85%">
-            <p>微信充值</p>
-            <p style="color:#999">微信安全支付</p>
-          </div>
-           <span>
-            <input type="checkbox" id="gcs-checkbox" class="gcs-checkbox">
-            <label for="gcs-checkbox"></label>
-          </span>
-       </div>
+      <!--微信支付  -->
+      <div class="pay" @click="payType = 'weixin'" style="margin-top: 0.1rem;">
+        <i class="iconfont icon-weixin1" style></i>
+        <div style="width:85%">
+          <p>微信充值</p>
+          <p style="color:#999">微信安全支付</p>
+        </div>
+        <i class="iconfont icon-xuanzhong" v-if="payType === 'weixin'"></i>
+        <i class="iconfont icon-weixuanzhong" v-else></i>
+      </div>
       <!-- 微信支付  end -->
-       <!-- 支付宝支付 -->
-       <div class="pay" style="margin-top:0rem;">
-          <i class="iconfont icon-zhifubao" ></i>
-          <div  style="width:85%">
-            <p>支付宝充值</p>
-            <p style="color:#999">支付宝安全支付</p>
-          </div>
-           <span>
-            <input type="checkbox" id="gcs-checkbox" class="gcs-checkbox">
-            <label for="gcs-checkbox"></label>
-          </span>
-       </div>
+      <!-- 支付宝支付 -->
+      <div class="pay" @click="payType = 'zhifubao'">
+        <i class="iconfont icon-zhifubao"></i>
+        <div style="width:85%">
+          <p>支付宝充值</p>
+          <p style="color:#999">支付宝安全支付</p>
+        </div>
+        <i class="iconfont icon-xuanzhong" v-if="payType === 'zhifubao'"></i>
+        <i class="iconfont icon-weixuanzhong" v-else></i>
+      </div>
       <!--支付宝支付  end  -->
-      <c-button :title="'下一步'"></c-button>
-     
+      <c-button @click="recharge">下一步</c-button>
     </div>
   </div>
 </template>
 <script>
+import services from '@/services';
+
 export default {
   data() {
-    return {};
+    return {
+      userInfo: {},
+      amount: "",
+      payType: "weixin"
+    };
   },
   methods: {
-   
+    async fetchUserInfo() {
+      try {
+        let res = await services.fetchUserInfo();
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        this.userInfo = res.data;
+      } catch (err) {
+        return this.$toast(err.message);
+      }
+    },
+    async recharge(){
+
+    }
   },
-  created() {}
+  created() {
+    this.fetchUserInfo();
+  }
 };
 </script>
