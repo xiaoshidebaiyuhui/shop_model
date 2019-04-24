@@ -8,7 +8,7 @@ $padding-y: 0.12rem;
   @include flexbox(space-between);
   position: relative;
   padding: $padding-y $padding-x $padding-y 0;
-  border-bottom: 1px solid $color-border;
+  @include border-bottom();
 
   &:last-child {
     border-bottom: none;
@@ -59,11 +59,15 @@ $padding-y: 0.12rem;
   }
 
   .c-cell-name {
-    font-weight: 400;
+    color: #666;
+    font-weight: 500;
   }
 
   .c-cell-value {
-    color: #999;
+    color: #bbb;
+    font-size: 0.14rem;
+    line-height: 0.14rem;
+    vertical-align: text-top;
   }
 }
 </style>

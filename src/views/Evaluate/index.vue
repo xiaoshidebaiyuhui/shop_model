@@ -1,25 +1,26 @@
 <style lang="scss" scoped>
 @import "~@/css/var";
+@import "~@/css/mixin";
 .evaluate {
   background: #fff;
   padding: 0.1rem;
-  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
 }
 .evaluate_t img {
   width: 0.35rem;
+  height: 0.35rem;
   border-radius: 50%;
 }
-.evaluate span {
-  padding-left: 0.05rem;
-}
+
 .evaluate_txt {
-  padding: 0.1rem 0;
+  padding: 0.05rem 0;
 }
 .eva_txt_img {
-  width: 33.3%;
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   margin: auto;
-  padding: 0 0.03rem;
+  margin-right: 0.05rem;
+  margin-bottom: 0.05rem;
 }
 img {
   object-fit: cover;
@@ -30,94 +31,166 @@ img {
 .primary {
   color: $color-primary;
 }
+
+.topbar {
+  overflow: hidden;
+  background: #fff;
+  @include border-bottom();
+}
+
+.select_data_item {
+  float: left;
+  color: #555;
+  padding: 0.05rem 0.15rem;
+  background: #ffe6ea;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  margin: 0.1rem 0.05rem;
+
+  &.black {
+    background: #e8e8e8;
+  }
+
+  &.active {
+    background: $color-primary-gradient;
+    color: #fff;
+  }
+}
 </style>
 <template>
-  <div class="record-page">
+  <div class="record-page page">
     <c-header :title="'评价'"></c-header>
     <div class="c-page-body header-pd">
-      <div class="evaluate" v-for="(item,index) in item" :key="index">
-        <div class="evaluate_t" style="display:flex;align-items: center;">
-          <img :src="item.header">
-          <span>{{item.uname}}</span>
-        </div>
-        <p style="color:#999;">
-          <span>{{item.createTime}}</span>
-          颜色分类：<span>{{item.colorType}}</span>
-        </p>
-        <p class="evaluate_txt">{{item.txt}}</p>
-        <img v-for="(txt_img,index) in txt_img" :key="index" class="eva_txt_img" :src="txt_img.img">
-        <p style="text-align:right;padding:0.05rem 0;">
-          <span
-            :class="{ccc:item.iscolor==0,primary:item.iscolor==1}"
-            @click="iscolor(item)"
-          >{{item.xin}}</span>
-          <span class="ccc">0</span>
-        </p>
+      <div class="topbar">
+        <div class="select_data_item" :class="{active: flag == 'all'}" @click="changeFlag('all')">全部</div>
+        <div
+          class="select_data_item"
+          :class="{active: flag == 'good'}"
+          @click="changeFlag('good')"
+        >好评</div>
+        <div
+          class="select_data_item"
+          :class="{active: flag == 'middle'}"
+          @click="changeFlag('middle')"
+        >中评</div>
+        <div class="select_data_item black" :class="{active: flag == 'bad'}" @click="changeFlag('bad')">差评</div>
       </div>
+      <div v-if="rateList.length > 0">
+        <router-link
+          tag="div"
+          :to="{ path:'/evaluation_detail', query:{rateId: rate.id}}"
+          class="evaluate"
+          v-for="(rate,index) in rateList"
+          :key="index"
+        >
+          <div class="evaluate_t" style="display:flex;align-items: center;">             
+            <img v-if="rate.user && rate.user.avatar" :src="rate.user.avatar | hostUrl">
+            <img v-else class="avator" src="@/assets/default_avator.jpg">
+            <span style="padding-left: 0.05rem;">{{rate.user.nickname}}</span>
+          </div>
+          <p style="color:#999;font-size:0.13rem;padding-top:0.05rem;">
+            <span>{{rate.createTime | date}}</span>
+            <span style="padding-left: 0.05rem;">{{rate.itemPropvalues}}</span>
+          </p>
+          <p class="evaluate_txt">{{rate.content || '用户没有填写评价内容'}}</p>
+          <div>
+            <img
+              v-for="(img,index) in rate.rateImgList"
+              :key="index"
+              class="eva_txt_img"
+              :src="img | hostUrl"
+            >
+          </div>
+          <p style="text-align:right;padding:0.05rem 0;">
+            <span @click.stop="likeRate(rate.id, rate.rateLikeId)">
+              <i
+                  class="iconfont"
+                  :class="rate.rateLikeId ? 'icon-appreciate_fill_light primary' : 'icon-appreciate_light'"
+                ></i>
+                <span class="ccc">{{rate.likeCount}}</span>
+            </span>
+          
+          </p>
+        </router-link>
+      </div>
+      <c-empty-hint v-else hint="还没有相关评价" icon="icon-comment_light"></c-empty-hint>
     </div>
   </div>
 </template>
 <script>
+import services from "@/services";
+import filter from "@c/filter";
+
 export default {
+  filters: {
+    date: filter.date
+  },
   data() {
     return {
-      txt_img: [
-        { img: "http://pic25.photophoto.cn/20121025/0035035954531961_b.jpg" },
-        {
-          img:
-            "http://img02.fumu.com/data/attachment/album/200912/26/21158_1261838181cdba.jpg"
-        },
-        {
-          img:
-            "http://img3.imgtn.bdimg.com/it/u=2061381807,3851153182&fm=26&gp=0.jpg"
-        }
-      ],
-      item: [
-        {
-          header:
-            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549866693683&di=2809ed20f7353ea896749a31db949739&imgtype=0&src=http%3A%2F%2Fpic41.photophoto.cn%2F20161129%2F0005018388660581_b.jpg",
-          uname: "mimimiimi1",
-          txt:
-            "摸料柔软，透气摸着特别舒服，面料柔，透气摸着特别舒服，面料柔软，透气摸着特别舒服，面料柔软，透气摸着特别舒服，面料柔软，透气",
-          xin: "❤",
-          iscolor: 0,
-          createTime: "2018-10-22"
-          ,colorType:'白色'
-        },
-        {
-          header:
-            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549866693683&di=2809ed20f7353ea896749a31db949739&imgtype=0&src=http%3A%2F%2Fpic41.photophoto.cn%2F20161129%2F0005018388660581_b.jpg",
-          uname: "mimimiimi2",
-          txt:
-            "摸着特别舒服，面料柔软，透气摸着特别舒服，面料柔，透气摸着特别舒服，面着特别舒服，面料柔软，透气摸着特别舒服，面料柔软，透气",
-          xin: "❤",
-          iscolor: 0,
-          createTime: "2018-10-22"
-          ,colorType:'白色'
-
-        },
-        {
-          header:
-            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549866693683&di=2809ed20f7353ea896749a31db949739&imgtype=0&src=http%3A%2F%2Fpic41.photophoto.cn%2F20161129%2F0005018388660581_b.jpg",
-          uname: "mimimiimi3",
-          txt:
-            "摸着特别舒服，面料柔软，透气摸着特别舒服柔，透气摸着特别舒服，面料柔软，透气摸着特别舒服，面料柔软，透气摸着特别舒服，面料柔软，透气",
-          xin: "❤",
-          iscolor: 0,
-          createTime: "2018-10-22"
-          ,colorType:'白色'
-
-        }
-      ]
+      flag: "all",
+      itemId: "",
+      rateList: []
     };
   },
   methods: {
-    iscolor(item) {
-      item.iscolor = item.iscolor == 0 ? 1 : 0;
+    async fetchItemRateList() {
+      try {
+        this.$showLoading();
+        let { itemId, flag } = this;
+        flag = flag === 'all' ? undefined : flag;
+        let res = await services.fetchItemRateList({
+          itemId,
+          flag
+        });
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        this.$hideLoading();
+        this.rateList = res.data;
+      } catch (err) {
+        this.$hideLoading();
+        return this.$toast(err.message);
+      }
+    },
+    changeFlag(flag) {
+      if (this.flag === flag) return;
+
+      this.flag = flag;
+
+      this.fetchItemRateList();
+    },
+    async likeRate(rateId, rateLikeId) {
+      try {
+        this.$showLoading();
+        let { itemId, flag } = this;
+        let isLike = rateLikeId ? false : true;
+        let res = await services.rateLike({
+          rateId,
+          isLike
+        });
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        let rate = this.rateList.find(item => item.id == rateId);
+
+        rate.rateLikeId = res.data.rateLikeId;
+        if (isLike) {
+          rate.likeCount++;
+        } else {
+          rate.likeCount--;
+        }
+
+        this.$hideLoading();
+      } catch (err) {
+        this.$hideLoading();
+        return this.$toast(err.message);
+      }
     }
   },
   created() {
-    console.log(this.$route.params);
+    this.itemId = this.$route.query.itemId;
+
+    this.fetchItemRateList();
   }
 };
 </script>

@@ -1,13 +1,10 @@
 <style scoped lang="scss">
-.footprint-page {
-  background: #f3f3f3;
-}
-.c-page-body {
-  // padding: 0.44rem 0.1rem 0.1rem 0.1rem;
-}
+@import '~@/css/mixin';
+
+
 .footprint_t {
   padding: 0.1rem 0;
-  border-bottom: 1px solid #f4f4f4;
+  @include border-bottom();
 }
 .footprint_t i {
   padding-right: 0.05rem;
@@ -22,17 +19,20 @@
 </style>
 
 <template>
-  <div class="footprint-page">
+  <div class="footprint-page page">
     <c-header :title="'我的关注'"></c-header>
     <div class="c-page-body header-pd">
-      <!--  -->
-      <!-- <div class="footprint_t">
-          <span><i class="iconfont icon-shoplight"></i>亿人通互联网商城</span>
-          <span>2019-01-24 14:24:16</span>
-          
-      </div>-->
-      <!--  -->
-      <c-goodslist :data="itemList"></c-goodslist>
+      <div v-if="itemList.length > 0">
+        <c-goods-item
+          v-for="(item,index) in itemList"
+          :key="index"
+          :id="item.id"
+          :img="item.imgList[0]"
+          :name="item.name"
+          :price="item.itemPrice"
+        ></c-goods-item>
+      </div>
+      <c-empty-hint v-else-if="!loading" icon="icon-like" hint="没有关注的商品"></c-empty-hint>
     </div>
   </div>
 </template>
@@ -43,23 +43,31 @@ import services from "@/services";
 export default {
   data() {
     return {
-      list: []
+      list: [],
+      loading: false
     };
   },
-  computed:{
-    itemList(){
-      return this.list.map(item=> item.item);
+  computed: {
+    itemList() {
+      return this.list.map(item => item.item);
     }
   },
   methods: {
     async listFavorite() {
       try {
+        this.loading = true;
+        this.$showLoading();
+        this.list = [];
         let res = await services.listFavorite();
 
         if (services.$isError(res)) throw new Error(res.message);
 
+        this.loading = false;
+        this.$hideLoading();
         this.list = res.data;
       } catch (err) {
+        this.loading = false;
+        this.$hideLoading();
         this.$toast(err.message);
       }
     }

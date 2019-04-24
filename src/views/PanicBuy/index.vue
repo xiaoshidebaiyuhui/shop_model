@@ -1,25 +1,35 @@
 <style scoped lang="scss">
 @import "~@/css/var";
+@import "~@/css/mixin";
 .buy_time {
   display: flex;
   width: 100%;
   box-sizing: border-box;
   overflow: scroll;
-  background: $color-primary;
+  background: $color-primary-gradient;
+
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
 }
 .buy_time_ul {
-  color: rgba(#fff, 0.5);
+  color: rgba(#fff, 0.6);
   padding: 0.1rem;
+  min-width:0.7rem;
   &.active {
     color: #fff;
   }
 }
-.buy_time_ul li:first-of-type {
+.buy_time_ul div:first-of-type {
   font-size: 0.2rem;
+      text-align: center;
 }
-.buy_time_ul li:last-of-type {
+.buy_time_ul div:last-of-type {
   font-size: 0.12rem;
   text-align: center;
+  white-space: nowrap;
 }
 .color_fff {
   color: #fff;
@@ -42,7 +52,7 @@
 
       .buy_con_right {
         padding-left: 0.1rem;
-        width: 100%;
+        flex: 1;
         .p1 {
           font-size: 0.14rem;
           display: -webkit-box;
@@ -63,7 +73,7 @@
         }
         .p4 {
           display: flex;
-          align-items:center;
+          align-items: center;
         }
         .p4 span:first-of-type {
           font-size: 0.18rem;
@@ -96,63 +106,75 @@
   top: 25%;
   font-size: 0.12rem;
 }
+
+.progress-wrap {
+  @include flexbox;
+}
+
+.sold-count {
+  color: #999;
+  font-size: 0.12rem;
+  margin-left: 0.05rem;
+}
 </style>
-<style>
+<style lang="scss">
+@import "~@/css/var";
 .mt-progress-runway {
   border-radius: 1rem;
+  background: #fbe9e9;
 }
 .mt-progress-progress {
-  background-color: #f94a92;
+  transition: width 0.3s ease-out;
+  background-color: $color-primary;
   border-radius: 1rem;
 }
 </style>
 
 
 <template>
-  <div class="footprint-page">
-    <c-header :title="'淘抢购'"></c-header>
+  <div class="footprint-page page">
+    <c-header :title="'限时抢购'"></c-header>
     <div class="c-page-body header-pd">
       <div class="panic_buy">
-        <div class="buy_time">
-          <ul
-            :class="{active: val.time == activeTime }"
+        <div class="buy_time" ref="navWrap">
+          <div
             class="buy_time_ul"
-            v-for="(val,index) in item"
+            v-for="(item,index) in flashbuyList"
             :key="index"
-            @click="activeTime=val.time"
+            :class="{active: activeFlashbuyId == item.id }"
+            @click="changeActive(item.id)"
           >
-            <li>{{val.time}}</li>
-            <li>{{time > val.time ?'已开抢': time == val.time ? '进行中' : '即将开场'}}</li>
-          </ul>
+            <div>{{item.startTime | date('hh:mm')}}</div>
+            <div>{{statusList[index]}}</div>
+          </div>
         </div>
         <div class="buy_con">
           <ul>
-            <li v-for="(val,index) in content_item" :key="index">
-              <img :src="val.img">
+            <li v-for="(item,index) in flashbuyItemList" :key="index" @click="$router.push(`/items/${item.itemId}`)">
+              <img v-lazy="item.itemImg">
               <div class="buy_con_right">
-                <p class="p1">{{val.title}}</p>
-                <p class="p3" style="position:relative;">
-                  <mt-progress :value="val.value" :bar-height="14"></mt-progress>
-                  <span
-                  v-if="val.value<80"
-                    style="position: absolute;
-                    left: 5%;
-                    font-size: 0.12rem;
-                    top: 25%;"
-                  >已抢{{val.num}}件</span>
-                  <span v-else  style="position: absolute;
-                    left: 5%;
-                    font-size: 0.12rem;
-                    top: 25%;">即将抢完</span>
-                  <span class="percent">{{val.value}}%</span>
-                </p>
+                <p class="p1">{{item.itemName}}</p>
+                <div class="progress-wrap">
+                  <p class="p3" style="position:relative;">
+                    <mt-progress :value="item.progress" :bar-height="14"></mt-progress>
+                    <span
+                      style="position: absolute;
+                      left: 5%;
+                      font-size: 0.12rem;
+                      top: 25%;"
+                    >{{item.progress == 100 ? '已抢完': item.progress == 100 ? '即将抢完' : `${item.progress}%`}}</span>
+                  </p>
+                  <span class="sold-count">{{`已抢${item.soldCount}件`}}</span>
+                </div>
+                
                 <div style="display:flex;align-items: center;justify-content: space-between;">
                   <p class="p4">
-                    <span>￥{{val.price}}</span>
-                    <span>￥{{val.Dprice}}</span>
+                    <span>￥{{item.flashPrice}}</span>
+                    <span>￥{{item.itemPrice}}</span>
                   </p>
                   <P class="rob">
-                    <span>马上抢</span>
+                    <span v-if="item.status == 0">预热中</span>
+                    <span v-else-if="item.status == 1">马上抢</span>
                   </P>
                 </div>
               </div>
@@ -165,41 +187,18 @@
 </template>
 
 <script>
-import { Progress } from "mint-ui";
+import services from "@/services";
+import routerCachePage from "@/routerCache/page";
+import utils from "@/utils";
+
 export default {
+  mixins: [
+    routerCachePage({
+      scrollWrapSelector: ".c-page-body"
+    })
+  ],
   data() {
     return {
-      activeTime:'12:00',  
-      time: "12:00",
-      item: [
-        { time: "11:00" },
-        { time: "12:00" },
-        { time: "13:00" },
-        { time: "14:00" },
-        { time: "15:00" },
-        { time: "13:00" },
-        { time: "14:00" },
-        { time: "15:00" },
-        { time: "17:00" },
-        { time: "19:00" },
-        { time: "21:00" },
-        { time: "22:00" },
-        { time: "23:00" },
-        { time: "00:00" },
-        { time: "08:00" },
-        { time: "10:00" },
-        { time: "11:00" },
-        { time: "12:00" },
-        { time: "13:00" },
-        { time: "14:00" },
-        { time: "15:00" },
-        { time: "17:00" },
-        { time: "19:00" },
-        { time: "15:00" },
-        { time: "21:00" },
-        { time: "22:00" },
-        { time: "23:00" }
-      ],
       content_item: [
         {
           img:
@@ -232,10 +231,148 @@ export default {
           value: 96,
           num: 89
         }
-      ]
+      ],
+      flashbuyList: [],
+      activeFlashbuyId: "",
+      flashbuyItemList: [],
+      scrollTimeId: null
     };
   },
-  methods: {},
-  created() {}
+  computed: {
+    statusList() {
+      let hasStart = false;
+      let clone = this.flashbuyList.slice();
+      let dayLast;
+      return clone
+        .reverse()
+        .map(item => {
+          let now = new Date();
+          let startTime = new Date(item.startTime);
+          if (now >= startTime) {
+            if (hasStart) {
+              return "已开抢";
+            } else {
+              hasStart = true;
+              return "进行中";
+            }
+          } else {
+            if (startTime > utils.getDayEndTime(now)) {
+              return "明天开抢";
+            } else {
+              return "即将开抢";
+            }
+          }
+        })
+        .reverse();
+    }
+  },
+  methods: {
+    async fetchFlashbuyList() {
+      try {
+        this.$showLoading();
+        let res = await services.fetchFlashbuyList();
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        this.$hideLoading();
+        this.flashbuyList = res.data.list;
+        if (this.flashbuyList.length > 0) {
+          if(!this.activeFlashbuyId){
+            this.activeFlashbuyId = res.data.currentId;
+          }
+          this.fetchFlashbuyItemList();
+
+          //定位
+          this.$nextTick(() => {
+            this.positionActive();
+          });
+        }
+      } catch (err) {
+        this.$hideLoading();
+        return this.$toast(err.message);
+      }
+    },
+    positionActive() {
+      let wrap = this.$refs.navWrap;
+      let activeItem = wrap.querySelector(".active");
+
+      let containerWidth = wrap.clientWidth;
+      let containerScrollWidth = wrap.scrollWidth;
+      let width = activeItem.clientWidth;
+      let left = activeItem.offsetLeft;
+      let scrollLeft = wrap.scrollLeft;
+
+      let distScrollLeft = left - (containerWidth - width) / 2;
+      if (distScrollLeft <= 0) {
+        distScrollLeft = 0;
+      } else if (distScrollLeft + containerWidth >= containerScrollWidth) {
+        distScrollLeft = containerScrollWidth - containerWidth;
+      }
+
+      this.scroll(wrap, scrollLeft, distScrollLeft);
+    },
+    scroll(elem, scrollLeft, distScrollLeft) {
+      this.scrollTimeId && clearTimeout(this.scrollTimeId);
+      let c = (distScrollLeft - scrollLeft) / 10;
+
+      let run = () => {
+        let d = elem.scrollLeft + c;
+
+        if (c >= 0) {
+          if (d >= distScrollLeft) {
+            elem.scrollLeft = distScrollLeft;
+            return;
+          }
+        } else {
+          if (d <= distScrollLeft) {
+            elem.scrollLeft = distScrollLeft;
+            return;
+          }
+        }
+
+        elem.scrollLeft = d;
+
+        this.scrollTimeId = setTimeout(() => {
+          run();
+        }, 1000 / 60);
+      };
+
+      run();
+    },
+    changeActive(activeFlashbuyId) {
+      if (this.activeFlashbuyId == activeFlashbuyId) return;
+
+      this.activeFlashbuyId = activeFlashbuyId;
+
+      this.fetchFlashbuyItemList();
+
+      this.$nextTick(() => {
+        this.positionActive();
+      });
+    },
+    async fetchFlashbuyItemList() {
+      try {
+        this.$showLoading();
+        let flashbuyId = this.activeFlashbuyId;
+        this.flashbuyItemList = [];
+
+        let res = await services.fetchFlashbuyItemList({
+          flashbuyId
+        });
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        this.$hideLoading();
+        this.flashbuyItemList = res.data;
+      } catch (err) {
+        this.$hideLoading();
+        return this.$toast(err.message);
+      }
+    }
+  },
+  created() {
+    this.fetchFlashbuyList();
+    
+  }
 };
 </script>

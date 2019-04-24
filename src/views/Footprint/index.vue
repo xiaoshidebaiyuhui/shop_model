@@ -1,58 +1,96 @@
 <style scoped lang="scss">
+@import '~@/css/mixin';
 .footprint-page {
-  background: #f3f3f3;
+  background: #e8e8e8;
 }
-.c-page-body{
-  // padding: 0.44rem 0.1rem 0.1rem 0.1rem;
+
+.list-title {
+  padding: 0.05rem;
+  color: #999;
+  font-size: 0.12rem;
 }
-.footprint_t{
+.footprint_t {
   padding: 0.1rem 0;
-  border-bottom:1px solid #f4f4f4;
+  @include border-bottom();
 }
-.footprint_t i{
+.footprint_t i {
   padding-right: 0.05rem;
 }
-.footprint_t span{
+.footprint_t span {
   display: inline-block;
   width: 49%;
 }
-.footprint_t span:last-of-type{
+.footprint_t span:last-of-type {
   text-align: right;
 }
 </style>
 
 <template>
-  <div class="footprint-page">
+  <div class="footprint-page page">
     <c-header :title="'我的足迹'"></c-header>
     <div class="c-page-body header-pd">
-        <c-goodslist :data="itemList"></c-goodslist>
-     </div>
+      <div v-if="list.length > 0">
+        <div v-for="(itemList,dateTitle) in footprintList" :key="dateTitle">
+          <div class="list-title">{{dateTitle}}</div>
+          <c-goods-item
+            v-for="(item,index) in itemList"
+            :key="index"
+            :id="item.itemId"
+            :img="item.itemImg"
+            :name="item.itemName"
+            :price="item.itemPrice"
+          ></c-goods-item>
+        </div>
+      </div>
+      <c-empty-hint v-else-if="!loading" icon="icon-footprint" hint="没有留下任何足迹">
+      </c-empty-hint>
+    </div>
   </div>
 </template>
 
 <script>
-import services from '@/services';
-   
+import services from "@/services";
+import filter from "@c/filter";
+
 export default {
   data() {
     return {
-      list: []
+      list: [],
+      loading:false
     };
   },
-  computed:{
-    itemList(){
-      return this.list.map(item=> item.item);
+  computed: {
+    footprintList() {
+      let res = {};
+      this.list.forEach(item => {
+        let dateTitle = filter.date(item.createTime, "yyyy-MM-dd");
+
+        if (!res[dateTitle]) {
+          res[dateTitle] = [];
+        }
+
+        res[dateTitle].push(item);
+      });
+
+      return res;
     }
   },
   methods: {
-   async listFootprint() {
+    async listFootprint() {
       try {
+        this.loading = true;
+        this.$showLoading();
+        this.list = [];
         let res = await services.listFootprint();
 
         if (services.$isError(res)) throw new Error(res.message);
 
+        this.loading = false;
+        this.$hideLoading();
         this.list = res.data;
       } catch (err) {
+        this.loading = false;
+        this.$hideLoading();
         this.$toast(err.message);
       }
     }

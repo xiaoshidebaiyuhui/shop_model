@@ -1,8 +1,7 @@
 <style lang="scss" scoped>
 @import "~@/css/var";
-.c-page-body {
-  background: #f3f3f3;
-}
+@import "~@/css/mixin";
+
 .record {
   background: #fff;
   padding: 0 0.1rem;
@@ -17,7 +16,8 @@ ul li:last-of-type {
 .record_ul {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #f4f4f4;
+  // border-bottom: 1px solid #f4f4f4;
+  @include border-bottom();
   padding: 0.1rem 0;
 }
 .recharge_type {
@@ -37,7 +37,7 @@ ul li:last-of-type {
 }
 </style>
 <template>
-  <div class="record-page">
+  <div class="record-page page">
     <c-header :title="'充值记录'"></c-header>
     <div class="c-page-body header-pd">
       <div class="record">

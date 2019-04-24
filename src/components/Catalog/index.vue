@@ -7,23 +7,24 @@
     display: flex;
   }
 
-  .catalog-list {
-    height: 100%;
-    width: 1.05rem;
+  .left-container {
+    position: relative;
     background: #f8f8f8;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    height: 100%;
+    width: 1.05rem;
+  }
 
+  .catalog-list {
     .catalog-list-item {
       position: relative;
-      float: left;
       width: 100%;
       height: 0.5rem;
       line-height: 0.5rem;
       text-align: center;
       box-sizing: border-box;
       font-size: 0.13rem;
-      color: #000;
       transition: 0.2s all;
 
       &.active {
@@ -39,15 +40,6 @@
           width: 0.04rem;
         }
 
-        // &:after {
-        //   background-color: #fff;
-        //   position: absolute;
-        //   right: -0.01rem;
-        //   top: 0;
-        //   content: "";
-        //   height: 100%;
-        //   width: 0.01rem;
-        // }
       }
     }
   }
@@ -64,6 +56,7 @@
   .type-list {
     margin-top: -0.125rem;
     overflow: hidden;
+    padding-bottom: 0.8rem;
 
     .type-item {
       float: left;
@@ -94,32 +87,32 @@
 <template>
   <div class="c-catalog">
     <c-header ref="header" :backType="0">
-      <c-search-input
-        slot="center"
-        @click.native="$emit('toSearch')"
-        disabled="disabled"
-        style="width:100%;"
-        placeholder="搜索你喜欢的宝贝"
-      ></c-search-input>
+      <div class="c-input-mask" slot="center" @click="$emit('toSearch')">
+        <c-search-input style="width:100%;" placeholder="搜索你喜欢的宝贝"></c-search-input>
+      </div>
     </c-header>
 
     <div class="c-page-body">
-      <ul class="catalog-list c-header-pd c-tab-pd">
+      <div class="left-container c-header-pd c-tab-pd" ref="leftContainer">
+      <ul class="catalog-list" >
         <li
           v-for="(item,index) in catalogList"
           :key="index"
           class="catalog-list-item"
-          :class="{'active':catalogIndex == item.id}"
+          :class="{'active':catalogIndex == item.id, [`item-${item.id}`]:true}"
           @click="changeCatalog(item.id)"
         >{{item.name}}</li>
       </ul>
-      <div class="right-container">
-        <div class="c-header-pd c-tab-pd">
+      </div>
+      <div class="right-container" ref="rightContainer">
+        <div class="c-header-pd">
           <ul class="type-list">
             <li class="type-item" v-for="(item,index) in itemTypeList" :key="index">
-              <router-link :to="{path:'/items',query:{itemTypeId:item.id}}">
-                <div style="padding:0 0.05rem;">
-                  <img :src="item.img">
+              <router-link :to="{path:'/items',query:{categoryId:item.id}}">
+                <div style="padding:0.1rem 0.15rem;">
+                  <div class="c-img-box">
+                    <img v-lazy="item.img" :key="item.img">
+                  </div>
                 </div>
                 <span>{{item.name}}</span>
               </router-link>
@@ -137,7 +130,7 @@ import services from "@/services";
 import routerCacheComponent from "@/routerCache/component";
 
 export default {
-  mixins:[
+  mixins: [
     routerCacheComponent({
       scrollWrapSelector: ".right-container"
     })
@@ -156,26 +149,39 @@ export default {
 
         this.catalogList = res.data;
         let defaultId = this.catalogList[0].id;
-        this.changeCatalog(defaultId);
+        this.$nextTick(() => {
+          this.changeCatalog(defaultId);
+        });
       } catch (err) {
         return this.$toast(err.message);
       }
     },
     async fetchItemTypeList(catalogId) {
       try {
-        let res = await services.fetchItemTypeList({catalogId});
+        let res = await services.fetchItemTypeList({ catalogId });
 
         this.itemTypeList = res.data;
-        this.$forceUpdate();
       } catch (err) {
-
+        return this.$toast(err.message);
       }
     },
 
     changeCatalog(id) {
+      if (this.catalogIndex == id) return;
+
+      this.$refs.rightContainer.scrollTop = 0;
+
       this.catalogIndex = id;
       this.fetchItemTypeList(id);
     },
+
+    // scrollCatalog() {
+    //   //左边容器滚动定位
+    //   let id = this.catalogIndex;
+    //   let activedItem = this.$refs.leftContainer.querySelector(`.item-${id}`);
+    //   let scrollTop = activedItem ? activedItem.offsetTop : 0;
+    //   this.$refs.leftContainer.scrollTop = scrollTop;
+    // },
 
     //父类调用
     tabActived() {
@@ -184,9 +190,14 @@ export default {
   },
 
   created() {
-    if(!this.$restored){
+    if (!this.$restored) {
       this.fetchCatalogList();
-    }
+    } 
+    // else {
+    //   this.$nextTick(() => {
+    //     this.scrollCatalog();
+    //   });
+    // }
   }
 };
 </script>

@@ -1,24 +1,24 @@
 <style lang="scss" scoped>
 @import "~@/css/var";
+@import "~@/css/mixin";
 $height: 0.44rem;
 $color: #444;
 $color-active: rgba(0, 0, 0, 0.2);
 $bg-color: #f8f8f8;
 .c-header {
-  position: fixed;
+  position: absolute;
   z-index: 90;
   top: 0;
   right: 0;
   left: 0;
   color: $color;
   background: $bg-color;
-  border-bottom: 1px solid rgba(230, 230, 230, 0.5);
+  @include border-bottom(1px, rgba(230, 230, 230, 0.5));
   height: $height;
 
   &.transparent {
     background: transparent;
     border: none;
-
     .icon-back {
       position: relative;
       &:after {
@@ -36,26 +36,24 @@ $bg-color: #f8f8f8;
     }
   }
 
-  // &.white {
-  //   $color: #444;
-  //   background: #fff;
-  //   color: $color;
+  &.primary {
+    $bc: $color-primary-gradient;
+    $fc: #f8f8f8;
 
-  //   .header-title {
-  //     color: $color;
-  //   }
+    background: $bc;
+    border: none;
 
-  //   .header-left,
-  //   .header-right {
-  //     a {
-  //       color: $color;
+    .header-title {
+      color: $fc;
+    }
 
-  //       &:active {
-  //         text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
-  //       }
-  //     }
-  //   }
-  // }
+    .header-left,
+    .header-right {
+      a {
+        color: $fc;
+      }
+    }
+  }
 
   .header-body {
     overflow: hidden;
@@ -71,25 +69,33 @@ $bg-color: #f8f8f8;
     width: 100%;
     display: flex;
     align-items: center;
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
   }
 
   .header-title {
     // color: $color;
     text-align: center;
-    font-size: 0.15rem;
+    font-size: 0.16rem;
     overflow: hidden;
     white-space: nowrap;
     width: 100%;
-    margin: 0;
+    margin: 0 0.2rem;
   }
 
   .header-left,
   .header-right {
+    z-index: 1;
     a {
       font-size: 0.14rem;
       font-weight: 400;
       color: $color;
-      margin: 0 5px;
+      padding: 0 0.05rem;
+
+      .iconfont {
+        font-size: 0.22rem;
+        width: 0.22rem;
+      }
 
       &:active {
         opacity: 0.5;
@@ -127,7 +133,7 @@ $bg-color: #f8f8f8;
     <div class="header-body">
       <div class="header-left" ref="left">
         <a class="header-back" v-if="backType !== 0" @click="backType === 1 ? toBack(): toRoot()">
-          <i class="iconfont icon-back" style="padding-right: 0.02rem;font-size: 0.22rem;"></i>
+          <i class="iconfont icon-back"></i>
           <span style="margin-left: -0.04rem;">{{backText}}</span>
         </a>
         <slot name="left"></slot>
@@ -159,13 +165,30 @@ export default {
       default: ""
     },
     theme: String,
+    leftPadding: {
+      type: Boolean,
+      default: true
+    },
+    rightPadding: {
+      type: Boolean,
+      default: true
+    },
     centerStyle: {}
   },
   computed: {
     innerCenterStyle() {
+      let style = {};
+
+      if (this.leftPadding) {
+        style["padding-left"] = `${this.centerPaddingX}px`;
+      }
+
+      if (this.rightPadding) {
+        style["padding-right"] = `${this.centerPaddingX}px`;
+      }
+
       return {
-        "padding-left": `${this.centerPaddingX}px`,
-        "padding-right": `${this.centerPaddingX}px`,
+        ...style,
         ...this.centerStyle
       };
     }
@@ -180,8 +203,9 @@ export default {
       let leftWdith = this.$refs.left.offsetWidth;
       let rightWdith = this.$refs.right.offsetWidth;
       let maxWidth = Math.max(leftWdith, rightWdith);
-      console.log(maxWidth);
       this.centerPaddingX = maxWidth;
+      console.log(this);
+      console.log(this.centerPaddingX);
     },
     toBack() {
       history.back();

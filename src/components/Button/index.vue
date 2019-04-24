@@ -4,9 +4,9 @@
   color: #fff;
   width: 100%;
   margin: auto;
-  padding: 0.1rem;
-  background: $color-primary;
-  border:1px solid $color-primary;
+  padding: 0.12rem;
+  background: $color-primary-gradient;
+  border:none;
   text-align: center;
   border-radius: 0.05rem;
   margin-top: 0.2rem;

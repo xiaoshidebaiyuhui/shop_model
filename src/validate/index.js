@@ -3,7 +3,15 @@ function trim(value){
 }
 
 const validate = {
-    mobile(value){
+    isNull(value){
+        return value == null;
+    },
+
+    isEmpty(value){
+        return validate.isNull(value) || value === '';
+    },
+
+    isMobile(value){
         return /^\d{11}$/.test(trim(value));
     },
 

@@ -8,36 +8,42 @@ import App from './App'
 import router from './router';
 import store from './store';
 
+import config from '@/config';
+
 import layer from '@c/layer';
+import popup from '@c/popup';
 import '@/components';
+import '@/filters';
 import MintUI from 'mint-ui';
-import VueLazyload from 'vue-lazyload';
-import preview from 'vue-photo-preview' //图片放大缩小
-import 'vue-photo-preview/dist/skin.css'
+const {VueLazyload} = require('@/js/vue-lazyload.js');
+import preview from 'vue-photo-preview' //图片预览
+import 'vue-photo-preview/dist/skin.css';
 
-
-Vue.use(layer);
 Vue.use(MintUI);
 Vue.use(VueLazyload)
-Vue.use(preview)
+Vue.use(preview, {
+  fullscreenEl: false,
+  zoomEl: false,
+  arrowEl: false,
+  tapToClose: true,
+})
+
+Vue.use(config);
+Vue.use(layer);
+Vue.use(popup);
+
+
 
 // if ( !(process.env.NODE_ENV === 'production' && process.env.ENV === 'prod') ) {
 //   let VConsole = require('vconsole');
 //   let vConsole = new VConsole();
 // }
 
-window.webViewRefresh = function () {};
+window.webViewRefresh = function () { };
 
-document.addEventListener('touchstart', () => {});
+document.addEventListener('touchstart', () => { });
 
 Vue.config.productionTip = false;
-
-Vue.filter('gender', val => {
-  return ({
-    '0': '男',
-    '1': '女'
-  })[val] || '';
-});
 
 
 /* eslint-disable no-new */

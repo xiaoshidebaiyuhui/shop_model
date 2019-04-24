@@ -1,30 +1,28 @@
-<style lang="scss">
-.item_details {
-  width: 100%;
-  img {
-    width: 100%;
-    object-fit: cover;
-  }
-}
-</style>
 <style scoped lang="scss">
 @import "~@/css/mixin";
 @import "~@/css/var";
-.pop-enter-active,
-.pop-leave-active {
-  // transform: translateY(0);
-  transition: opacity 0.3s;
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.4s;
 }
+
+.slide-enter,
+.slide-leave-to {
+  opacity: 0.8;
+  transform: translate3d(0, 100%, 0);
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transform: translateY(0);
-  transition: 0.3s;
+  transition: all 0.4s;
 }
-.pop-enter,
-.pop-leave-to {
+
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
-  // transform: translateY(100%);
 }
+
 .icon-fenxiang {
   position: relative;
   &:after {
@@ -54,17 +52,9 @@
         line-height: pxTorem(570);
         font-size: pxTorem(60);
         font-weight: bold;
-        a {
+        .c-img-box {
           width: 100%;
           height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          > img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
         }
       }
       .mint-swipe-indicators {
@@ -82,12 +72,12 @@
       // padding: 0rem 0rem pxTorem(1);
       .item_white {
         background: #fff;
-        padding: pxTorem(18) pxTorem(14) pxTorem(14);
+        padding: 0.1rem 0.07rem 0.1rem;
       }
       .item_select_des {
         .dex_txt {
-          font-size: pxTorem(28);
-          letter-spacing: 1px;
+          font-weight: 500;
+          font-size: 0.15rem;
         }
         .dex_share {
           font-size: pxTorem(16);
@@ -95,8 +85,9 @@
           min-width: 15%;
         }
         .des_price {
-          padding: pxTorem(5) 0rem;
+          padding-top: 0.1rem;
           .price_now {
+            font-weight: 500;
             font-size: pxTorem(40);
             color: $color-primary;
           }
@@ -107,14 +98,15 @@
           }
         }
         .express_price {
-          font-size: 12px;
+          padding-top: 0.1rem;
+          font-size: 0.12rem;
           color: #7b7b7b;
         }
       }
       .item_select_classification {
         background: #fff;
         font-size: pxTorem(28);
-        margin: pxTorem(20) 0rem;
+        margin-top: 0.1rem;
         padding: pxTorem(20) pxTorem(14);
         i {
           opacity: 0.4;
@@ -126,9 +118,13 @@
           .evaluate_header {
             display: flex;
             align-items: center;
-            padding-top: pxTorem(10);
+            padding-top: pxTorem(20);
             .header_img {
-              width: pxTorem(70);
+              width: 0.3rem;
+              height: 0.3rem;
+              margin-right: 0.1rem;
+              overflow: hidden;
+              border-radius: 50%;
               img {
                 width: 100%;
                 object-fit: cover;
@@ -136,9 +132,11 @@
             }
           }
           .evaluate_des {
-            padding: pxTorem(13) 0px;
+            padding: 0.05rem 0 0.1rem;
+            padding-left: 0.4rem;
           }
           .evaluate_img {
+            padding-left: 0.4rem;
             &::after {
               content: "";
               display: block;
@@ -146,10 +144,11 @@
             }
             img {
               float: left;
+              width: 1rem;
               height: 1rem;
-              width: 33%;
               object-fit: cover;
-              padding: pxTorem(6) pxTorem(6) pxTorem(0) pxTorem(0);
+              margin-right: 0.1rem;
+              margin-bottom: 0.1rem;
             }
             img:nth-child(3n) {
               padding: pxTorem(6) pxTorem(0) pxTorem(0) pxTorem(0);
@@ -188,37 +187,34 @@
         .item_details_checkout {
           > div {
             width: 100%;
-            padding: pxTorem(18) 0rem;
-            text-align: center;
-            border-bottom: 1px solid #d0d0d0;
-            transition: 0.3s ease;
-            &.details_checkout_active {
-              color: $color-primary;
-              border-bottom: 1px solid $color-primary;
-            }
-          }
-        }
-        .item_parameters {
-          padding: pxTorem(10) pxTorem(26);
-          .item_parameters_list {
-            padding: pxTorem(30) 0rem;
-            > div:nth-child(1) {
-              min-width: 30%;
-              color: #898989;
-            }
-            > div:nth-child(2) {
-              min-width: 70%;
-            }
-          }
-          .item_parameters_list:not(:last-child) {
-            border-bottom: 1px solid #f4f4f4;
+            padding: 0.09rem 0.1rem;
+            @include border-bottom();
           }
         }
       }
     }
   }
+
+  .item_parameters {
+    padding: pxTorem(10) 0;
+    .item_parameters_list {
+      padding: 0.12rem 0rem;
+      > div:nth-child(1) {
+        width: 25%;
+        color: #898989;
+      }
+      > div:nth-child(2) {
+        width: 75%;
+        color: #444;
+        padding-left: 0.05rem;
+      }
+    }
+    .item_parameters_list:not(:last-child) {
+      @include border-bottom();
+    }
+  }
   .item_page_footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -234,10 +230,6 @@
         width: 40%;
         .item_page_footer_follow {
           width: 50%;
-
-          &.active {
-            color: $color-primary;
-          }
         }
       }
 
@@ -248,149 +240,161 @@
           width: 50%;
           color: #fff;
           height: 100%;
-        }
-        .item_page_footer_buys:nth-child(1) {
-          background: #fe9402;
-        }
-        .item_page_footer_buys:last-child {
-          background: $color-primary;
+          border: 0;
+
+          background: $color-primary-gradient;
+          padding: 0.15rem 0rem;
+
+          &:disabled {
+            background: $color-primary-gradient-disabled;
+          }
+
+          &:not(:disabled):active {
+            background: $color-primary-gradient-active;
+          }
+
+          &.btn-secondly {
+            background: $color-secondly;
+
+            &:active {
+              background: $color-secondly-active;
+            }
+          }
         }
       }
     }
   }
-  .item_detail_pop_model {
-    position: fixed;
-    top: 0;
+
+  .item_detail_pop_model_hidden {
+    @include mask;
+  }
+
+  .item_detail_pop_content {
+    position: absolute;
+    z-index: 110;
     bottom: 0;
     left: 0;
     right: 0;
-    // background: rgba(0, 0, 0, 0.7);
-    z-index: 999;
-    .item_detail_pop_box {
+    background: #fff;
+    .item_detail_pop_parents {
       position: relative;
       height: 100%;
-      width: 100%;
-      z-index: 999;
-      .item_detail_pop_model_hidden {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.7);
-        // opacity: 0;
-        // transition: opacity 0.6s;
-      }
-      .pop_model_active {
-        opacity: 1;
-      }
-      .item_detail_pop_content {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 70%;
-        background: #fff;
-        z-index: 33;
-        .item_detail_pop_parents {
-          position: relative;
+      padding: 0rem pxTorem(30);
+      .item_detail_top_img {
+        @include border-bottom();
+        padding: 0.08rem 0rem 0.08rem 1.15rem;
+        min-height: 0.9rem;
+        .item_detail_img_box {
+          position: absolute;
+          top: -0.28rem;
+          left: 0.15rem;
+          width: 1.1rem;
+          height: 1.1rem;
+          padding: pxTorem(3);
+          border-radius: pxTorem(6);
+          overflow: hidden;
+          background: #fff;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          img {
+            width: 100%;
+            object-fit: cover;
+          }
+        }
+        .item_detail_top_price {
+          display: flex;
           height: 100%;
-          padding: 0rem pxTorem(16);
-          .item_detail_top_img {
-            @include border-bottom(#eee);
-            padding: 0.08rem 0rem 0.08rem 1.2rem;
-            min-height: 1rem;
-            .item_detail_img_box {
-              position: absolute;
-              top: -0.28rem;
-              left: 0.1rem;
-              width: 1.1rem;
-              height: 1.1rem;
-              padding: pxTorem(3);
-              border-radius: pxTorem(6);
+          justify-content: space-between;
+          .item_detail_top_des {
+            width: 86%;
+            .price_num {
+              color: $color-primary;
+              line-height: 1;
+              font-size: 0.18rem;
+              span {
+                font-size: pxTorem(38);
+              }
+            }
+          }
+          .item_detail_top_cancel {
+            > i {
+              color: #666;
+              font-size: pxTorem(48);
+            }
+          }
+        }
+      }
+      .item_detail_center {
+        height: 3rem;
+        overflow: auto;
+        padding: 0 0.15rem;
+        padding-bottom: 0.6rem;
+        margin: 0 -0.15rem;
+        .item_detail_select_data {
+          padding: 0.08rem 0rem 0rem;
+          .select_data_lists {
+            &::after {
+              content: "";
+              display: block;
+              clear: both;
+            }
+            .select_data_item {
+              font-size: 0.13rem;
+              float: left;
+              color: #555;
+              padding: 0.05rem 0.15rem;
+              background: #f8f8f8;
               overflow: hidden;
-              background: #fff;
-              border: 1px solid rgba(0, 0, 0, 0.1);
-              img {
-                width: 100%;
-                object-fit: cover;
-              }
+              border-radius: pxTorem(5);
+              margin: 0rem pxTorem(18) pxTorem(18) 0rem;
             }
-            .item_detail_top_price {
-              display: flex;
-              height: 100%;
-              justify-content: space-between;
-              .item_detail_top_des {
-                width: 86%;
-                .price_num {
-                  color: $color-primary;
-                  line-height: 1;
-                  font-size: 0.18rem;
-                  span {
-                    font-size: pxTorem(38);
-                  }
-                }
-              }
-              .item_detail_top_cancel {
-                > i {
-                  font-size: pxTorem(48);
-                }
-              }
-            }
-          }
-          .item_detail_center {
-            height: 66%;
-            overflow: auto;
-            padding-bottom: pxTorem(14);
-            .item_detail_select_data {
-              padding: pxTorem(20) 0rem pxTorem(15);
-              @include border-bottom(#eee);
-              .select_data_lists {
-                &::after {
-                  content: "";
-                  display: block;
-                  clear: both;
-                }
-                .select_data_item {
-                  float: left;
-                  padding: pxTorem(13) pxTorem(23);
-                  background: #f5f5f5;
-                  overflow: hidden;
-                  border-radius: pxTorem(5);
-                  margin: 0rem pxTorem(18) pxTorem(18) 0rem;
-                }
-                .select_data_item_active {
-                  background: $color-primary;
-                  color: #fff;
-                }
-                .select_data_item_active_none {
-                  color: #bbb;
-                }
-              }
-            }
-            .select_data_til {
-              font-size: pxTorem(32);
-              margin-bottom: pxTorem(16);
-            }
-            .item_detail_number {
-              padding-top: pxTorem(30);
-            }
-          }
-          .item_detail_confirm {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            @include flexbox;
-            .btn {
-              @include flex;
-              padding: pxTorem(30) 0rem;
-              text-align: center;
-              background: $color-primary;
+            .select_data_item_active {
+              background: $color-primary-gradient;
               color: #fff;
-              font-size: pxTorem(32);
-              // width: 100%;
-              border: 0;
+            }
+            .select_data_item_active_none {
+              color: #bbb;
+            }
+          }
+        }
+        .select_data_til {
+          font-size: pxTorem(24);
+          margin-bottom: pxTorem(16);
+        }
+        .item_detail_number {
+          @include border-top();
+          padding-top: pxTorem(30);
+        }
+      }
+      .item_detail_confirm {
+        // position: absolute;
+        // bottom: 0;
+        // left: 0;
+        // right: 0;
+        margin: 0 -0.15rem;
+        @include flexbox;
+        .btn {
+          @include flex;
+          padding: pxTorem(30) 0rem;
+          text-align: center;
+          background: $color-primary-gradient;
+          color: #fff;
+          font-size: pxTorem(32);
+          // width: 100%;
+          border: 0;
+
+          &:disabled {
+            background: $color-primary-gradient-disabled;
+          }
+
+          &:not(:disabled):active {
+            background: $color-primary-gradient-active;
+          }
+
+          &.btn-secondly {
+            background: $color-secondly;
+
+            &:active {
+              background: $color-secondly-active;
             }
           }
         }
@@ -398,12 +402,73 @@
     }
   }
 }
+.flashbuy {
+  @include flexbox;
+  color: #fff;
+  background: $color-primary-gradient;
+  padding: 0.15rem;
+  .box-l {
+    flex: 1;
+  }
+  .box-main {
+    width: 1.5rem;
+    padding-left: 0.2rem;
+  }
+  .box-r {
+    padding-left: 0.2rem;
+  }
+
+  .progress-wrap {
+    position: relative;
+    @include flexbox;
+    margin-bottom: -0.05rem;
+  }
+
+  .sold-count {
+    font-size: 0.12rem;
+    color: #f1f1f1;
+  }
+
+  .flash-price {
+    font-size: 0.2rem;
+    line-height: 1.2;
+    font-weight: 500;
+  }
+
+  .old-price {
+    font-size: 0.12rem;
+    text-decoration: line-through;
+    color: #eee;
+    padding-left: 0.05rem;
+    line-height: 1;
+  }
+}
 </style>
 
+<style lang="scss">
+@import "~@/css/var";
+.item_details {
+  width: 100%;
+  img {
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+.mt-progress-runway {
+  border-radius: 1rem;
+  background: #fbe9e9;
+}
+.mt-progress-progress {
+  transition: width 0.3s ease-out;
+  background-color: #ff168c;
+  border-radius: 1rem;
+}
+</style>
 <template>
   <div class="item_page page">
     <c-header
-      :title="'商品详情'"
+      :title="itemInfo.name"
       theme="transparent"
       :style="{'background-color':`rgba(245, 245, 245,${headerOpacity})`,color:`rgba(68, 68, 68,${headerOpacity})`}"
     >
@@ -415,72 +480,118 @@
       <div class="item_page_content" ref="body">
         <mt-swipe :auto="0" :showIndicators="true" :speed="600">
           <mt-swipe-item v-for="(val, index) in itemInfo.imgList" :key="index">
-            <router-link to="/">
-              <img :src="val">
-            </router-link>
+            <div class="c-img-box box-bg">
+              <img v-lazy="val">
+            </div>
           </mt-swipe-item>
         </mt-swipe>
+        
+        <!-- 限时抢购 -->
+        <div class="flashbuy" v-if="itemInfo.flashbuy" @click="$router.push('/panic_buy')">
+          <div class="box-l">
+            <div>￥<span class="flash-price">{{itemFlashPrice.flashPrice}}</span></div>
+            <div class="old-price">￥{{itemFlashPrice.oldPrice}}</div>
+          </div>
+          <div class="box-main">
+            <div style="    font-size: 0.18rem;" v-if="itemInfo.flashbuy.status == 0">预热中</div>
+            <template  v-if="itemInfo.flashbuy.status == 1">
+              <div class="progress-wrap">
+                <mt-progress :value="itemInfo.flashbuy.item.progress" :bar-height="14" style="flex:1;"></mt-progress>
+                <span
+                  style="position: absolute;
+                  left: 5%;
+                  font-size: 0.12rem;
+                  top: 25%;"
+                >{{itemInfo.flashbuy.item.progress == 100 ? '已抢完': itemInfo.flashbuy.item.progress >=80 ? '即将抢完' : `${itemInfo.flashbuy.item.progress}%`}}</span>
+                
+              </div>
+              <span class="sold-count">{{`已抢${itemInfo.flashbuy.item.soldCount}件`}}</span>
+            </template>
+            
+          </div>
+          <div class="box-r" v-if="itemInfo.flashbuy.status == 0">
+            <div style="font-size: 0.12rem;text-align: center;">即将开抢
+              <i class="iconfont icon-right" style="font-size: 0.12rem;"></i>
+            </div>
+            <div>
+              <c-count-down :endTime="new Date(itemInfo.flashbuy.flashbuy.startTime)"></c-count-down>
+            </div>
+          </div>
+          <div class="box-r" v-if="itemInfo.flashbuy.status == 1">
+            <div style="font-size: 0.12rem;text-align: center;">距本场结束
+              <i class="iconfont icon-right" style="font-size: 0.12rem;"></i>
+            </div>
+            <div>
+              <c-count-down :endTime="new Date(itemInfo.flashbuy.flashbuy.endTime)"></c-count-down>
+            </div>
+          </div>
+        </div>
+
         <div class="item_select">
           <div class="item_select_des item_white">
             <div class="chen_center_absolute">
               <div class="dex_txt">{{itemInfo.name}}</div>
-              <!-- <div class="dex_share chen_center_absolute_column">
-                <div>
-                  <i class="iconfont icon-share_light"></i>
-                </div>
-                <div>分享</div>
-              </div>-->
             </div>
             <div class="des_price">
-              <span class="price_now">￥{{itemPrice}}</span>
-              <!-- <span class="price_old">￥930</span> -->
+              <span class="price_now" v-if="!itemInfo.flashbuy">￥{{itemPrice}}</span>
             </div>
             <div class="chen_center_absolute express_price">
-              <div>快递：15.00</div>
-              <div>销量：0 件</div>
+              <div>快递：￥{{itemInfo.postFee}}</div>
+              <div>销量：{{itemInfo.saleCount}}件</div>
             </div>
           </div>
 
-          <div class="item_select_classification chen_center_absolute" @click="openPopModel('sku')">
-            <div>请选择型号</div>
-            <div>
-              <i class="iconfont icon-right"></i>
-            </div>
-          </div>
-          <div class="item_select_classification item_white">
+          <c-cell-list style="margin-top:0.15rem;">
+            <c-cell
+              name="领券"
+              @click="$router.push('/coupon')"
+            ></c-cell>
+          </c-cell-list>
+          <c-cell-list style="margin-top:0.15rem;">
+            <c-cell
+              name="选择规格"
+              @click="openPopModel('sku')"
+              :value="selectTip"
+            ></c-cell>
+            <c-cell
+              name="产品参数"
+              @click="popupVisible = true"
+            ></c-cell>
+            
+          </c-cell-list>
+
+          <div class="item_select_classification item_white" v-if="itemInfo.rateCount > 0">
             <div class="chen_center_absolute">
+              <div>商品评价({{itemInfo.rateCount}})</div>
               <div>
-                商品评价(
-                <span>333</span>)
-              </div>
-              <router-link :to="{ name: 'evaluate', params: { userId: 123 }}">
-                <div class="item_look_more">
+                <router-link class="item_look_more" :to="{ path: '/evaluate', query: { itemId }}">
                   <span>查看更多</span>
                   <i class="iconfont icon-right"></i>
+                </router-link>
+              </div>
+            </div>
+            <div v-if="rateList.length > 0">
+              <router-link
+                :to="{ path: '/evaluate', query: { itemId }}"
+                tag="div"
+                class="evaluate"
+                v-for="(rate,index) in rateList"
+                :key="index"
+              >
+                <div class="evaluate_header">
+                  <div class="header_img">
+                    <img v-if="rate.user && rate.user.avatar" :src="rate.user.avatar | hostUrl">
+                    <img v-else class="avator" src="@/assets/default_avator.jpg">
+                  </div>
+                  <div style="color:#777">{{rate.user.nickname}}</div>
                 </div>
+                <div class="evaluate_des">{{rate.content || '用户没有填写评价内容'}}</div>
+                <!-- <div class="evaluate_img" v-if="rate.rateImgList.length > 0">
+                  <img v-for="(img,imgIndex) in rate.rateImgList" :key="imgIndex" :src="img | hostUrl">
+                </div> -->
               </router-link>
             </div>
-            <div class="evaluate">
-              <div class="evaluate_header">
-                <div class="header_img">
-                  <img
-                    src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549866693683&di=2809ed20f7353ea896749a31db949739&imgtype=0&src=http%3A%2F%2Fpic41.photophoto.cn%2F20161129%2F0005018388660581_b.jpg"
-                  >
-                </div>
-                <div>赵钱孙李</div>
-              </div>
-              <div
-                class="evaluate_des"
-              >摸着特别舒服，面料柔软，透气摸着特别舒服，面料柔，透气摸着特别舒服，面着特别舒服，面料柔软，透气摸着特别舒服，面料柔软，透气</div>
-              <div class="evaluate_img">
-                <img
-                  src="//img.alicdn.com/imgextra/i4/3534152336/O1CN011T7vfnPcYMx5A0u_!!3534152336.jpg_2200x2200Q90s50.jpg"
-                  v-for="(val,index) in 5"
-                  :key="index"
-                  preview="1"
-                >
-              </div>
-            </div>
+            <div style="color: #777;font-size: 0.12rem;padding-top: 0.1rem;" v-else>暂无评价</div>
           </div>
           <!-- <div class="item_select_shop_name chen_center_absolute">
             <div class="chen_center_absolute">
@@ -491,54 +602,39 @@
             </div>
             <div class="shop_name_btn">进店逛逛</div>
           </div>-->
-          <div class="item_details_parameters">
+          <div class="item_details_parameters" style="margin-top:0.1rem;">
             <div class="chen_center_absolute item_details_checkout">
-              <div
-                :class="{'details_checkout_active':itemDetails === '1'}"
-                @click="itemDetailsShow"
-              >详情</div>
-              <div
+              <div>商品详情</div>
+              <!-- <div
                 :class="{'details_checkout_active':itemDetails === '0'}"
                 @click="itemParametersShow"
-              >参数</div>
+              >参数</div>-->
             </div>
             <!-- <div v-lazy-container="{ selector: 'img' }"> -->
             <div
-              v-show="itemDetails === '1'"
               class="item_details"
               ref="imgs_detail"
               v-html="itemInfo.detail"
               v-lazy-container="{ selector: 'img' }"
-            >
-              <!-- <li v-for="(val, index) in item_details_data" :key="index">
-                <img :src="val.url">
-              </li>-->
-            </div>
-            <ul v-show="itemDetails === '0'" class="item_parameters">
-              <li
-                class="item_parameters_list chen_center_absolute"
-                v-for="(val,index) in item_parameters_data"
-                :key="index"
-              >
-                <div>{{val.title}}</div>
-                <div>{{val.des}}</div>
-              </li>
-            </ul>
+            ></div>
           </div>
         </div>
       </div>
     </div>
-    <c-share :shareShow="share" @shareClose="shareNone"></c-share>
+
     <div class="item_page_footer">
       <div class="item_page_footer_content chen_center_absolute">
         <div class="chen_center_absolute_center item_page_footer_follow_wrap">
-          <div
-            class="chen_center_absolute_column item_page_footer_follow"
-            :class="{'active':favoriteId}"
-            @click="favorite()"
-          >
-            <i class="iconfont icon-like"></i>
-            <span>关注</span>
+          <div class="item_page_footer_follow chen_center_absolute_column" @click="favorite()">
+            <i
+              style="font-size: 0.2rem;"
+              v-show="favoriteId"
+              class="c-primary iconfont icon-likefill"
+            ></i>
+            <span style="font-size: 0.12rem;" v-show="favoriteId">取消关注</span>
+            
+            <i style="font-size: 0.2rem;" v-show="!favoriteId" class="iconfont icon-like"></i>
+            <span style="font-size: 0.12rem;" v-show="!favoriteId">关注</span>
           </div>
           <!-- <div class="chen_center_absolute_column item_page_footer_follow">
             <i class="iconfont icon-shop"></i>
@@ -548,93 +644,113 @@
             class="chen_center_absolute_column item_page_footer_follow"
             @click="$router.push('/shopcart')"
           >
-            <i class="iconfont icon-cart"></i>
-            <span>购物车</span>
+            <i style="font-size: 0.2rem;" class="iconfont icon-cart"></i>
+            <span style="font-size: 0.12rem;">购物车</span>
           </div>
         </div>
         <div class="chen_center_absolute_center item_page_footer_buys_wrap">
-          <div
-            class="chen_center_absolute_column item_page_footer_buys"
+          <button
+            class="chen_center_absolute_column item_page_footer_buys btn-secondly"
             @click="openPopModel('cart')"
-          >
-            <span>加入购物车</span>
-          </div>
-          <div
+          >加入购物车</button>
+          <button
             class="chen_center_absolute_column item_page_footer_buys"
             @click="openPopModel('buy')"
-          >
-            <span>立刻购买</span>
-          </div>
+            :disabled="itemInfo.flashbuy && itemInfo.flashbuy.status == 0"
+          >立刻购买</button>
         </div>
       </div>
     </div>
-    <transition name="pop">
-      <div class="item_detail_pop_model" v-show="pop_model">
-        <div class="item_detail_pop_box">
-          <div class="item_detail_pop_model_hidden" @click="closePopModel()"></div>
-          <div class="item_detail_pop_content">
-            <div class="item_detail_pop_parents">
-              <div class="item_detail_top_img">
-                <div class="item_detail_img_box">
-                  <img v-if="itemInfo.imgList" :src="itemInfo.imgList[0]">
+
+    <c-share :shareShow="share" @shareClose="shareNone" :title="itemInfo.name" :pic="itemInfo.imgList && itemInfo.imgList[0]" digest="好货推荐，快来看看"></c-share>
+
+    <transition name="fade">
+      <div class="item_detail_pop_model_hidden" @click="closePopModel()" v-show="pop_model"></div>
+    </transition>
+    <transition name="slide">
+      <div class="item_detail_pop_content" v-show="pop_model">
+        <div class="item_detail_pop_parents">
+          <div class="item_detail_top_img">
+            <div class="item_detail_img_box">
+              <img v-if="itemInfo.imgList" :src="itemInfo.imgList[0]">
+            </div>
+            <div class="item_detail_top_price">
+              <div class="item_detail_top_des">
+                <div v-if="selectFlashbuySku" class="">
+                  <span class="price_num">￥{{ selectFlashbuySku.flashPrice}}</span>
+                  <span class="old-price" style="font-size: 0.12rem;
+    text-decoration: line-through;
+    color: #888;">￥{{ selectFlashbuySku.price}}</span>
                 </div>
-                <div class="item_detail_top_price">
-                  <div class="item_detail_top_des">
-                    <div class="price_num">
-                      ￥{{selectSku ? selectSku.price : itemPrice}}
-                      <!-- <span>78.00</span> -->
-                    </div>
-                    <!-- <div v-if="selectSku">库存 {{selectSku.quantity}}件</div> -->
-                    <div>{{selectTip}}</div>
-                    <!-- <div>{{selectValue.length == 0?'请选择规格': `已选择:${selectValue.join(',')}`}}</div> -->
-                  </div>
-                  <div class="item_detail_top_cancel" @click="closePopModel()">
-                    <i class="iconfont icon-round_close_light"></i>
-                  </div>
+                <div v-else-if="selectSku" class="price_num">￥{{selectSku.price}}</div>
+                <div v-else-if="itemFlashPrice">
+                  <span class="price_num">￥{{ itemFlashPrice.flashPrice}}</span>
+                  <span class="old-price" style="font-size: 0.12rem;
+    text-decoration: line-through;
+    color: #888;">￥{{ itemFlashPrice.oldPrice}}</span>
                 </div>
+                <div v-else class="price_num">￥{{itemPrice}}</div>
+                <div style="padding-top:0.05rem;color:#666;">{{selectTip}}</div>
               </div>
-              <ul class="item_detail_center">
-                <li
-                  class="item_detail_select_data"
-                  v-for="(val,index) in itemInfo.propnames"
-                  :key="index"
-                >
-                  <div class="select_data_til">{{val.name}}</div>
-                  <div class="select_data_lists">
-                    <div
-                      class="select_data_item"
-                      v-for="(item,index2) in itemInfo.propvalues[index]"
-                      :key="index2"
-                      @click="selectDataItem(index, item.id)"
-                      :class="{
-                      'select_data_item_active_none': disabledList[index] && disabledList[index].includes(item.id),
-                      'select_data_item_active':selectValue[index] == item.id
-                    }"
-                    >{{item.name}}</div>
-                  </div>
-                </li>
-                <li class="chen_center_absolute item_detail_number">
-                  <div class="select_data_til" style="margin-bottom: 0rem;">
-                    数量
-                    <span v-if="selectSku">({{selectSku.quantity}}件)</span>
-                  </div>
-                  <div>
-                    <c-number-input :min="1" :max="20" v-model="quantity"></c-number-input>
-                  </div>
-                </li>
-              </ul>
-              <div v-if="pop_model === 'sku'" class="item_detail_confirm">
-                <button class="btn" style="background: #fe9402;" @click="submit('cart')">加入购物车</button>
-                <button class="btn" @click="submit('buy')">立刻购买</button>
-              </div>
-              <div v-else class="item_detail_confirm" @click="submit(pop_model)">
-                <button class="btn">确定</button>
+              <div class="item_detail_top_cancel" @click="closePopModel()">
+                <i class="iconfont icon-round_close_light"></i>
               </div>
             </div>
+          </div>
+          <div class="item_detail_center">
+            <div style="padding:0.15rem 0;">
+              <div
+                class="item_detail_select_data"
+                v-for="(val,index) in itemInfo.propnames"
+                :key="index"
+              >
+                <div class="select_data_til">{{val.name}}</div>
+                <div class="select_data_lists">
+                  <div
+                    class="select_data_item"
+                    v-for="(item,index2) in itemInfo.propvalues[index]"
+                    :key="index2"
+                    @click="selectDataItem(index, item.id)"
+                    :class="{
+                          'select_data_item_active_none': disabledList[index] && disabledList[index].includes(item.id),
+                          'select_data_item_active':selectValue[index] == item.id
+                        }"
+                  >{{item.name}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="chen_center_absolute item_detail_number">
+              <div class="select_data_til" style="margin-bottom: 0rem;">
+                数量
+                <span v-if="selectSku">({{selectSku.quantity}}件)</span>
+              </div>
+              <div>
+                <c-number-input :min="1" v-model="quantity"></c-number-input>
+              </div>
+            </div>
+          </div>
+          <div v-if="pop_model === 'sku'" class="item_detail_confirm">
+            <button class="btn btn-secondly" @click="submit('cart')">加入购物车</button>
+            <button :disabled="itemInfo.flashbuy && itemInfo.flashbuy.status == 0"  class="btn" @click="submit('buy')">立刻购买</button>
+          </div>
+          <div v-else class="item_detail_confirm" @click="submit(pop_model)">
+            <button class="btn">确定</button>
           </div>
         </div>
       </div>
     </transition>
+    <c-wrap-popup title="产品参数" :visible="popupVisible" @visibleChange="popupVisible = $event">
+      <ul class="item_parameters">
+        <li
+          class="item_parameters_list chen_center_absolute"
+          v-for="(val,index) in item_parameters_data"
+          :key="index"
+        >
+          <div>{{val.title}}</div>
+          <div>{{val.des}}</div>
+        </li>
+      </ul>
+    </c-wrap-popup>
   </div>
 </template>
 
@@ -655,7 +771,6 @@ export default {
 
       headerOpacity: 0,
 
-      itemDetails: "1",
       item_parameters_data: [
         //参数详情
         {
@@ -689,6 +804,7 @@ export default {
           des: "2019秋季"
         }
       ],
+      popupVisible: false,
       pop_model: "", //控制购买详情弹出层
       selectValue: [], //选择规格数据
       disabledList: [], //禁用的数组
@@ -697,7 +813,8 @@ export default {
       itemInfo: {},
       quantity: 1,
       favoriteId: "",
-      share: false //分享组件控制
+      share: false, //分享组件控制
+      rateList: []
     };
   },
   created() {
@@ -705,6 +822,7 @@ export default {
 
     this.itemId = this.$route.params.itemId;
     this.fetchItem();
+    this.fetchItemRateList();
 
     if (this.isLogin) {
       this.getFavoriteByItemId();
@@ -714,7 +832,7 @@ export default {
     this.bindEvent();
   },
   beforeDestroy() {
-    this.$preview.self.close();
+    this.$preview.self && this.$preview.self.close();
   },
   computed: {
     itemPrice() {
@@ -726,6 +844,29 @@ export default {
         return `${this.itemInfo.minPrice}-${this.itemInfo.maxPrice}`;
       }
     },
+    itemFlashPrice() {
+      if (!(this.itemInfo && this.itemInfo.flashbuy)) return null;
+
+      let flashItem = this.itemInfo.flashbuy.item;
+      let oldPrice = "";
+      if (flashItem.itemPrice == flashItem.itemMaxPrice) {
+        oldPrice = `${flashItem.itemPrice}`;
+      } else {
+        oldPrice = `${flashItem.itemPrice}-${flashItem.itemMaxPrice}`;
+      }
+
+      let flashPrice = "";
+      if (flashItem.flashPrice == flashItem.flashMaxPrice) {
+        flashPrice = `${flashItem.flashPrice}`;
+      } else {
+        flashPrice = `${flashItem.flashPrice}-${flashItem.flashMaxPrice}`;
+      }
+
+      return {
+        oldPrice,
+        flashPrice
+      };
+    },
     selectSku() {
       if (!(this.itemInfo && this.itemInfo.skus)) return null;
 
@@ -734,8 +875,14 @@ export default {
         return sku.propvalues.join(",") === this.selectValue.join(",");
       })[0];
 
-      // console.log("selectSku =>", sku);
       return sku;
+    },
+    selectFlashbuySku() {
+      if (!(this.itemInfo.flashbuy && this.selectSku)) return null;
+
+      return this.itemInfo.flashbuy.item.flashbuy_item_skus.find(
+        sku => sku.skuId == this.selectSku.id
+      );
     },
     selectTip() {
       if (!(this.itemInfo && this.itemInfo.propnames)) return "";
@@ -763,18 +910,12 @@ export default {
     bindEvent() {
       let body = this.$refs.body;
       body.addEventListener("scroll", () => {
-        let end = 100;
-        let scrollTop = Math.min(body.scrollTop, end);
-        this.headerOpacity = scrollTop / end;
+        let min = 150;
+        let max = 300;
+        let scrollTop = Math.max(body.scrollTop, min);
+        scrollTop = Math.min(scrollTop, max);
+        this.headerOpacity = (scrollTop - min) / (max - min);
       });
-    },
-    itemDetailsShow() {
-      //商品详情
-      this.itemDetails = "1";
-    },
-    itemParametersShow() {
-      //商品参数
-      this.itemDetails = "0";
     },
     openPopModel(type) {
       //选择参数
@@ -786,17 +927,18 @@ export default {
     },
     //加入购物车
     async submit(type) {
-      let inValid = this.itemInfo.propnames.some((prop, index) => {
+      let invalid = this.itemInfo.propnames.some((prop, index) => {
         if (!this.selectValue[index]) {
           this.$toast(`请选择${prop.name}`);
           return true;
         }
       });
 
-      if (inValid) return;
+      if (invalid) return;
 
       if (type === "cart") {
         try {
+          this.$showLoading();
           let { itemId } = this;
           let res = await services.addShopcart({
             itemId: this.itemId,
@@ -806,10 +948,12 @@ export default {
 
           if (services.$isError(res)) throw new Error(res.message);
 
+          this.$hideLoading();
           this.$toast(res.message);
 
           this.closePopModel();
         } catch (err) {
+          this.$hideLoading();
           return this.$toast(err.message);
         }
       } else {
@@ -822,6 +966,8 @@ export default {
         ];
 
         queryData = JSON.stringify(queryData);
+
+        this.closePopModel();
 
         this.$router.push({ path: "/confirmorder", query: { p: queryData } });
       }
@@ -875,8 +1021,9 @@ export default {
         });
 
         if (services.$isError(res)) throw new Error(res.message);
-
+        
         this.itemInfo = res.data;
+
         this.$nextTick(() => {
           this.imgDetail();
         });
@@ -886,12 +1033,29 @@ export default {
         return this.$toast(err.message);
       }
     },
+    async fetchItemRateList() {
+      try {
+        let { itemId } = this;
+        let res = await services.fetchItemRateList({
+          itemId,
+          pageSize: 2
+        });
+
+        console.log(res);
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        this.rateList = res.data;
+      } catch (err) {
+        return this.$toast(err.message);
+      }
+    },
     imgDetail() {
       //图片设置data-src
       this.itemInfo.detail = this.itemInfo.detail.replace(/src/g, "data-src");
       this.$nextTick(() => {
         let prews = this.$refs.imgs_detail;
-        let prewImgs = [...prews.querySelectorAll("img")];
+        let prewImgs = [...(prews ? prews.querySelectorAll("img") : [])];
         for (let i in prewImgs) {
           prewImgs[i].setAttribute("preview", "2");
         }
@@ -907,7 +1071,7 @@ export default {
       return skus.filter(sku => {
         let inSelectedSku = true;
         propnames.forEach((n, i) => {
-          //改属性类型没选择，或者选择属性值的属性类型跟改属性类型相同
+          //该属性类型没选择，或者选择属性值的属性类型跟改属性类型相同
           if (selectValue[i] == null || selectValue[i] == "" || index == i) {
             inSelectedSku = inSelectedSku && true;
           } else {
@@ -923,6 +1087,7 @@ export default {
       try {
         let { itemId } = this;
         let res;
+        this.$showLoading();
 
         //已经收藏
         if (this.favoriteId) {
@@ -944,7 +1109,10 @@ export default {
           this.$toast(res.message);
           this.favoriteId = res.data.id;
         }
+
+        this.$hideLoading();
       } catch (err) {
+        this.$hideLoading();
         return this.$toast(err.message);
       }
     },

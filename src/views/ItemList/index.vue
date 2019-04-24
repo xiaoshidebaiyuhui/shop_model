@@ -2,30 +2,60 @@
 <style scoped lang="scss">
 @import "~@/css/mixin";
 
+.slideX-enter-active,
+.slideX-leave-active {
+  transition: all 0.3s;
+}
+
+.slideX-enter,
+.slideX-leave-to {
+  transform: translate3d(0, -100%, 0);
+}
+
+.slideY-enter-active,
+.slideY-leave-active {
+  transition: all 0.4s;
+}
+
+.slideY-enter,
+.slideY-leave-to {
+  opacity: 0.8;
+  transform: translate3d(100%, 0, 0);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.4s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .item-list-page {
-  .header_r_i {
-    > i {
-      font-size: pxTorem(44);
-    }
-  }
   .list_wrap {
     // position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+    overflow: hidden;
     .list_select {
-      // position: absolute;
-      // top: 0;
-      // left: 0;
-      // right: 0;
       background: #fff;
-      @include border-bottom(rgba(230, 230, 230, 0.5));
-      padding: pxTorem(30) 0rem;
+      padding: pxTorem(20) 0.2rem;
+      font-size: 0.14rem;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
       .select_item {
-        width: 25%;
+        // width: 25%;
+        flex: 1;
       }
       .select_item:not(:last-child) {
-        @include border-right(rgba(230, 230, 230, 0.5));
+        @include border-right();
       }
       .select_item_active {
         color: $color-primary;
@@ -38,9 +68,8 @@
         color: #666666;
         i {
           font-size: 17px;
-          line-height: pxTorem(14);
+          line-height: 0.07rem;
           color: #b7b7b7;
-          line-height: 0.05rem;
         }
         .i_active {
           color: #f94a92;
@@ -49,7 +78,8 @@
     }
     .des_money {
       font-size: 0.16rem;
-      font-weight: 600;
+      line-height: 0.16rem;
+      font-weight: 500;
       color: $color-primary;
     }
     .buy_btn {
@@ -63,6 +93,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      padding-top: 0.41rem;
       // padding-bottom: pxTorem(20);
       > ul {
         height: 100%;
@@ -70,6 +101,9 @@
       .list_box {
         // overflow: hidden;
         padding: 0 pxTorem(10);
+        @include flexbox;
+        flex-wrap: wrap;
+
         &::after {
           content: "";
           display: block;
@@ -77,7 +111,7 @@
           height: 1px;
         }
         .list_box_item {
-          float: left;
+          // float: left;
           width: 50%;
           padding: pxTorem(26) pxTorem(10) 0rem;
           overflow: hidden;
@@ -85,6 +119,8 @@
           .item_pic {
             width: 100%;
             background-color: #fff;
+            border-radius: 0.06rem;
+            overflow: hidden;
             .pic {
               width: 100%;
               // a {
@@ -99,12 +135,10 @@
               padding: pxTorem(20) pxTorem(14);
               overflow: hidden;
               > p {
-                letter-spacing: 1px;
-                padding-bottom: pxTorem(13);
+                margin-bottom: 0.04rem;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                display: -webkit-box;
-                white-space: nowrap;
+                height: 0.4rem;
               }
             }
           }
@@ -118,10 +152,11 @@
         }
         .list_box_item {
           width: 100%;
-          padding: pxTorem(26) pxTorem(18) 0rem;
+          padding: pxTorem(26) pxTorem(18);
           overflow: hidden;
           display: block;
           background-color: #fff;
+          @include border-bottom();
           &::after {
             content: "";
             display: block;
@@ -130,94 +165,76 @@
           .item_pic {
             width: 100%;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            .pic {
-              width: 20%;
-              // a {
-              //   display: block;
-              img {
-                width: 100%;
-                object-fit: cover;
-              }
-              // }
+
+            .c-img-box {
+              width: 1.2rem;
+              height: 1.2rem;
+              padding-top: 0;
+              border-radius: 0.04rem;
+              overflow: hidden;
             }
             .des {
-              width: 80%;
-              padding: pxTorem(20) pxTorem(14);
+              flex: 1;
+              padding-left: 0.07rem;
               overflow: hidden;
               > p {
-                letter-spacing: 1px;
-                padding-bottom: pxTorem(13);
                 overflow: hidden;
                 text-overflow: ellipsis;
-                display: -webkit-box;
-                white-space: nowrap;
+                height: 0.4rem;
               }
             }
           }
         }
       }
       .loading_color {
-        color: $color-primary;
+        color: #888;
       }
     }
   }
   .item_select {
-    position: fixed;
-    z-index: 999;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(23, 22, 122, 0.2);
-    .select_box {
+    .select_bg {
+      @include mask;
+    }
+    .select_content {
+      z-index: 110;
+      width: 2.7rem;
       height: 100%;
-      width: 100%;
-      display: flex;
-      .select_bg {
-        height: 100%;
-        width: 15%;
-        background: rgba(0, 0, 0, 0.7);
-      }
-      .select_content {
-        width: 85%;
-        height: 100%;
-        background: #fff;
-        position: relative;
-        .select_price {
-          padding: pxTorem(45) pxTorem(26);
-          @include border-bottom(#e7e7e7);
-          .select_input {
-            span {
-              padding: 0px pxTorem(12);
-            }
-            input {
-              width: pxTorem(120);
-              padding: pxTorem(10) pxTorem(5);
-              border-radius: 4px;
-              box-shadow: none;
-              background: #f2f2f2;
-              border: none;
-            }
+      background: #fff;
+      position: absolute;
+      top: 0;
+      right: 0;
+      .select_price {
+        padding: pxTorem(45) pxTorem(26);
+        @include border-bottom();
+        .select_input {
+          span {
+            padding: 0px pxTorem(12);
+          }
+          input {
+            width: pxTorem(120);
+            padding: pxTorem(10) pxTorem(10);
+            border-radius: 4px;
+            box-shadow: none;
+            background: #f4f4f4;
+            border: none;
           }
         }
-        .content_bottom {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          .bottom_box {
-            @include border-top(#e7e7e7);
-            > div {
-              width: 50%;
-              padding: pxTorem(30) 0px;
-              text-align: center;
-            }
-            > div:nth-child(2) {
-              background: #ff5000;
-              color: #fff;
-            }
+      }
+      .content_bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        .bottom_box {
+          @include border-top($color-border);
+          > div {
+            width: 50%;
+            padding: pxTorem(30) 0px;
+            text-align: center;
+          }
+          > div:nth-child(2) {
+            background: $color-primary;
+            color: #fff;
           }
         }
       }
@@ -228,75 +245,66 @@
 
 <template>
   <div class="item-list-page page">
-    <div v-show="!search.visible">
+    <div style="height:100%;" v-show="!search.visible">
       <c-header>
-        <c-search-input
-          slot="center"
-          v-model="searchText"
-          @click.native="showSearch"
-          disabled="disabled"
-          style="width:100%;"
-        ></c-search-input>
-        <div slot="right" class="header_r_i" @click="listTypeClick">
-          <i class="iconfont icon-apps" v-show="listType"></i>
-          <i class="iconfont icon-sort" v-show="!listType"></i>
+        <div class="c-input-mask" slot="center" @click="showSearch">
+          <c-search-input v-model="searchText" style="width:100%;"></c-search-input>
         </div>
-        <!-- <div slot="right" class="header_r_i"><i class="iconfont icon-sortlight"></i></div> -->
+        <a slot="right" @click="listTypeClick">
+          <i class="iconfont icon-cascades" v-show="listType"></i>
+          <i class="iconfont icon-list" v-show="!listType"></i>
+        </a>
       </c-header>
       <div class="c-page-body header-pd">
         <div class="list_wrap">
-          <div class="list_select chen_center_absolute">
-            <div
-              class="select_item chen_center_absolute_center"
-              :class="{'select_item_active':listActive==0}"
-              @click="listAllClick(0)"
-            >综合</div>
-            <div
-              class="select_item chen_center_absolute_center"
-              :class="{'select_item_active':listActive==1}"
-              @click="listNumClick(1)"
-            >销量</div>
-            <div
-              class="select_item chen_center_absolute_center"
-              :class="{'select_item_active':listActive==2}"
-              @click="listPriceClick(2)"
-            >
-              <div>价格</div>
-              <div class="price_i">
-                <i class="iconfont icon-triangleupfill" :class="{'i_active':iSort == 1}"></i>
-                <i class="iconfont icon-triangledownfill" :class="{'i_active':iSort == 2}"></i>
+          <transition name="slideX">
+            <div class="list_select chen_center_absolute" v-show="barVisible">
+              <div
+                class="select_item chen_center_absolute_center"
+                :class="{'select_item_active':order=='normal'}"
+                @click="changeOrder('normal')"
+              >综合</div>
+              <div
+                class="select_item chen_center_absolute_center"
+                :class="{'select_item_active':order=='sale'}"
+                @click="changeOrder('sale')"
+              >销量</div>
+              <div
+                class="select_item chen_center_absolute_center"
+                :class="{'select_item_active':order=='priceAsc'|| order=='priceDesc'}"
+                @click="changeOrder(order=='priceAsc' ? 'priceDesc' : 'priceAsc')"
+              >
+                <div>价格</div>
+                <div class="price_i">
+                  <i class="iconfont icon-triangleupfill" :class="{'i_active':order=='priceAsc'}"></i>
+                  <i class="iconfont icon-triangledownfill" :class="{'i_active':order=='priceDesc'}"></i>
+                </div>
               </div>
+              <!-- <div class="select_item chen_center_absolute_center" @click="selectBoxVisible = true;">
+                筛选
+                <i class="iconfont icon-filter"></i>
+              </div> -->
             </div>
-            <div
-              class="select_item chen_center_absolute_center"
-              :class="{'select_item_active':listActive==3}"
-              @click="listSelectClick(3)"
-            >
-              筛选
-              <i class="iconfont icon-filter"></i>
-            </div>
-          </div>
+          </transition>
+         
           <div
             class="list_content"
             v-infinite-scroll="loadMore"
-            infinite-scroll-disabled="loadingDisable"
-            infinite-scroll-distance="40"
+            infinite-scroll-disabled="loadMoreDisabled"
+            infinite-scroll-distance="80"
           >
-            <!-- <mt-loadmore
-              :top-method="loadTop"
-              @top-status-change="handleTopChange"
-              :bottom-method="loadBottom"
-              @bottom-status-change="handleBottomChange"
-              :bottom-all-loaded="allLoaded"
-              :auto-fill="false"
-              ref="loadmore"
-            >-->
             <mt-loadmore
               :top-method="loadTop"
               @top-status-change="handleTopChange"
               :auto-fill="false"
               ref="loadmore"
             >
+              <div slot="top" class="mint-loadmore-top">
+                <span v-show="topStatus === 'pull'">下拉刷新</span>
+                <span v-show="topStatus === 'drop'">释放即可刷新</span>
+                <span v-show="topStatus === 'loading'">刷新中...</span>
+              </div>
+
               <ul :class="[listType?'list_box_column':'list_box']">
                 <router-link
                   tag="li"
@@ -306,49 +314,61 @@
                   :key="index"
                 >
                   <div class="item_pic">
-                    <div class="pic">
-                      <img :src="item.imgList[0]">
+                    <div class="c-img-box">
+                      <img :key="item.imgList[0]" v-lazy="item.imgList[0]">
                     </div>
                     <div class="des">
                       <p>{{item.name}}</p>
-                      <div class="chen_center_absolute">
-                        <div class="des_money">￥100.00</div>
-                        <div class="buy_btn" @click.stop>购买</div>
+                      <div style="min-height:0.21rem;">
+                        <span v-if="item.flash && item.flash.status == 1" class="c-tag">限时特价</span>
+                        <span v-if="item.isNew" class="c-tag secondly">新品</span>
+                      </div>
+                      <div class="chen_center_absolute" style="margin-top:0.05rem;">
+                        <span v-if="item.flash && item.flash.status == 1">
+                          <span class="des_money">￥{{item.flash.item.flashPrice}}</span>
+                          <span class="c-old-price" style="line-height: 0.16rem;">￥{{item.flash.item.itemPrice}}</span>
+                        </span>
+                        <span v-else class="des_money">￥{{item.minPrice}}</span>
+                        <span style="font-size: 0.12rem;color: #999999;margin-top: 2px;"
+                        >{{item.item_count && item.item_count.saleCount}}人已购买</span>
                       </div>
                     </div>
                   </div>
                 </router-link>
               </ul>
-              <div slot="top" class="mint-loadmore-top loading_color">
-                <span
-                  v-show="topStatus !== 'loading'"
-                  :class="{ 'is-rotate': topStatus === 'drop' }"
-                >松开刷新</span>
-                <span v-show="topStatus === 'loading'">刷新中...</span>
-              </div>
-              <!-- <div slot="bottom" class="mint-loadmore-bottom loading_color">
-                <span
-                  v-show="bottomStatus !== 'loading'"
-                  :class="{ 'is-rotate': bottomStatus === 'drop' }"
-                >松开刷新</span>
-                <span v-show="bottomStatus === 'loading'">加载中...</span>
-              </div>-->
+              <c-empty-hint
+                v-show="!loading && loadMoreDisabled && itemList.length === 0"
+                icon="icon-goods_light"
+                hint="没有相关商品"
+              ></c-empty-hint>
             </mt-loadmore>
-            <div v-show="loadingDisable" class="mint-loadmore-bottom loading_color">加载中...</div>
+            <div v-show="loading" class="mint-loadmore-bottom">
+              <mt-spinner
+                type="snake"
+                :size="20"
+                style="display: inline-block;"
+              ></mt-spinner>
+            </div>
+            <div
+              v-show="!loading && loadMoreDisabled && itemList.length > 0"
+              class="mint-loadmore-bottom loading_color"
+            >没有更多了</div>
           </div>
         </div>
       </div>
     </div>
-    <div v-show="selectBox" class="item_select">
-      <div class="select_box">
-        <div class="select_bg" @click="selectNone()"></div>
-        <div class="select_content">
+    <div class="item_select">
+      <transition name="fade">
+        <div class="select_bg" v-show="selectBoxVisible" @click="selectBoxVisible=false"></div>
+      </transition>
+      <transition name="slideY">
+        <div v-show="selectBoxVisible" class="select_content">
           <div class="select_price chen_center_absolute">
             <div>价格区间（元）</div>
             <div class="chen_center_absolute_center select_input">
-              <input type="number" placeholder="最低价">
+              <input type="number" v-model="minPrice" placeholder="最低价">
               <span>-</span>
-              <input type="number" placeholder="最高价">
+              <input type="number" v-model="maxPrice" placeholder="最高价">
             </div>
           </div>
           <div class="content_bottom">
@@ -358,7 +378,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
     <c-search
       :defaultSearchText="searchText"
@@ -372,8 +392,8 @@
 <script>
 import services from "@/services";
 import routerCachePage from "@/routerCache/page";
-import { Loadmore, InfiniteScroll } from "mint-ui";
-import { setTimeout } from "timers";
+import routerUtils from "@/utils/router-utils";
+
 export default {
   mixins: [
     routerCachePage({
@@ -382,62 +402,39 @@ export default {
   ],
   data() {
     return {
-      searchText: "11",
-      itemTypeId: "1",
+      oldScrollTop: 0,
+      barVisible: true,
+      pageIndex: 0,
+      pageSize: 20,
+      searchText: "",
+      categoryId: "1",
+      order: "normal",
+      minPrice: "",
+      maxPrice: "",
       search: {
         visible: false
       },
       listType: false, //商品列表排列方式
-      listActive: 0, //列表按钮点击变色
       itemList: [],
-      iSort: 0, //排序图片变色
-      selectBox: false, //筛选条件
-      allLoaded: false,
-      bottomStatus: "",
+      selectBoxVisible: false, //筛选条件
       topStatus: "",
-      loadingDisable: false //无限滚动控制器
+      loading: false, //无限滚动控制器
+      loadMoreDisabled: false
     };
   },
   methods: {
-    loadTop() {
-      // 下拉刷新加载更多数据
-      setTimeout(() => {
-        let firstVal = this.itemList[0];
-        for (let i = 0; i < 2; i++) {
-          this.itemList.unshift(firstVal);
-        }
-        this.$refs.loadmore.onTopLoaded();
-      }, 1500);
-    },
-    loadBottom() {
-      //上拉加载更多数据
-      setTimeout(() => {
-        let lastValue = this.itemList[1];
-        for (let i = 1; i <= 3; i++) {
-          this.itemList.push(lastValue);
-        }
-        // this.allLoaded = true;
-        this.$refs.loadmore.onBottomLoaded();
-      }, 1500);
-    },
-    handleBottomChange(status) {
-      //上拉事件
-      this.bottomStatus = status;
+    async loadTop() {
+      this.pageIndex = 0;
+      await this.fetchItemList();
+
+      this.$refs.loadmore.onTopLoaded();
     },
     handleTopChange(status) {
       //下拉事件
       this.topStatus = status;
     },
-    loadMore() {
-      //无限滚动事件触发
-      this.loadingDisable = true;
-      setTimeout(() => {
-        let lastValue = this.itemList[1];
-        for (let i = 1; i <= 6; i++) {
-          this.itemList.push(lastValue);
-        }
-        this.loadingDisable = false;
-      }, 300);
+    async loadMore() {
+      this.fetchItemList(true);
     },
     showSearch() {
       this.search.visible = true;
@@ -448,67 +445,93 @@ export default {
     listTypeClick() {
       this.listType = !this.listType;
     },
-    listAllClick(num) {
-      //综合
-      this.listActive = num;
-      this.iSort = 0;
-    },
-    listNumClick(num) {
-      //销量
-      this.listActive = num;
-      this.iSort = 0;
-    },
-    listPriceClick(num) {
-      //价格
-      this.listActive = num;
-      this.iSort =
-        this.iSort == 0 ? 1 : this.iSort == 1 ? 2 : this.iSort == 2 ? 1 : 0;
-      console.log(this.iSort);
-    },
-    listSelectClick(num) {
-      //筛选
-      this.listActive = num;
-      this.selectBox = true;
-    },
-    selectNone() {
-      //筛选消失
-      this.selectBox = false;
+    changeOrder(order) {
+      if (this.order === order) return;
+
+      this.order = order;
+      this.pageIndex = 0;
+      this.itemList = [];
+      this.fetchItemList();
     },
     handleSearch(searchText) {
+      this.categoryId = "";
       this.searchText = searchText;
       this.search.visible = false;
+      this.itemList = [];
+      this.pageIndex = 0;
 
       this.fetchItemList();
-      let route = {
-        ...this.$route,
-        query: {
-          searchText: searchText
-        }
-      };
-      this.$router.replace(route);
+
+      routerUtils.setQuery({
+        searchText: searchText
+      });
     },
-    async fetchItemList() {
+    async fetchItemList(append) {
       try {
-        let { searchText, itemTypeId } = this;
+        this.loadMoreDisabled = true;
+        this.loading = true;
+
+        let {
+          searchText,
+          categoryId,
+          order,
+          pageIndex,
+          pageSize,
+          minPrice,
+          maxPrice
+        } = this;
+        pageIndex++;
         let res = await services.fetchItemList({
-          categoryId: itemTypeId,
-          searchText
+          pageIndex,
+          pageSize,
+          categoryId,
+          searchText,
+          order,
+          minPrice,
+          maxPrice
         });
         if (services.$isError(res)) throw new Error(res.message);
-        this.itemList = res.data;
-        // for (let i = 0; i < 2; i++) {
-        //   this.itemList.push(...res.data);
-        // }
-        console.log(this.itemList);
+
+        this.pageIndex = pageIndex;
+
+        if (append) {
+          this.itemList = this.itemList.concat(res.data);
+        } else {
+          this.itemList = res.data;
+        }
+
+        this.loading = false;
+
+        if (res.data.length > 0 && res.data.length == pageSize) {
+          this.$nextTick(() => {
+            this.loadMoreDisabled = false;
+          });
+        }
       } catch (err) {
+        this.loadMoreDisabled = false;
+        this.loading = false;
         return this.$toast(err.message);
       }
+    },
+    handleScroll() {
+      let scrollTop = document.querySelector(".list_content").scrollTop;
+
+      if (scrollTop > this.oldScrollTop && scrollTop >= 41) {
+        this.barVisible = false;
+      } else if (scrollTop < this.oldScrollTop) {
+        this.barVisible = true;
+      }
+      this.oldScrollTop = scrollTop;
     }
   },
   created() {
     this.searchText = this.$route.query.searchText || "";
-    this.itemTypeId = this.$route.query.itemTypeId || "";
-    this.fetchItemList();
+    this.categoryId = this.$route.query.categoryId || "";
+  },
+  mounted() {
+    document
+      .querySelector(".list_content")
+      .addEventListener("scroll", this.handleScroll);
   }
 };
 </script>

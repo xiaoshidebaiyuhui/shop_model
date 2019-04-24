@@ -8,7 +8,7 @@
   }
   .inner {
     z-index: 110;
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -47,7 +47,7 @@
         padding: 0.1rem 0.16rem;
         @include flexbox(space-between, center);
         box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.7);
-        @include border-bottom(#f6f6f6);
+        @include border-bottom();
         .des_box {
           @include flexbox(center, center);
           .weixin_i {
@@ -73,27 +73,86 @@
       }
     }
     .pay_btn {
-      padding: 40% 10% 0%;
+      padding: 0.15rem;
+    }
+  }
+
+  .COMM_MSGBOX {
+    background-color: #fff;
+    position: absolute;
+    z-index: 110;
+    top: 50%;
+    left: 50%;
+    width: 316px;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    border-radius: 7px;
+
+    .COMM_MSGBOX_FORM {
+      padding: 27px 10px 0;
+      overflow: hidden;
+      color: #232326;
+    }
+
+    .COMM_MSGBOX_TIP {
+      display: block;
+      font-size: 16px;
+      line-height: 1em;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .COMM_MSGBOX_CONTENT {
+      display: block;
+      font-size: 14px;
+      line-height: 1.5em;
+      text-align: left;
+      margin: 18px 10px;
+    }
+
+    .COMM_MSGBOX_ACTION_WRAPPER {
+      overflow: hidden;
+      padding-top: 17px;
+      text-align: center;
+    }
+
+    .COMM_MSGBOX_CANCEL,
+    .COMM_MSGBOX_OK {
+      display: inline-block;
+      float: left;
+      line-height: 44px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      // border-top: 1px solid #e3e5e9;
+      @include border-top();
+      width: 158px;
+      height: 44px;
+      color: #777;
+    }
+
+    .COMM_MSGBOX_OK {
+      width: 158px;
+      height: 44px;
+      background: $color-primary-gradient;
+      color: #fff;
     }
   }
 }
 </style>
 
 <template>
-  <div class="cashier-page">
+  <div class="cashier-page page">
     <c-header :title="'收银台'"></c-header>
     <div class="c-page-body header-pd">
       <div class="cashier_wrap">
         <div class="cashier_money">
           需支付:
-          <span>
-            ￥
-            <span>78.88</span>
-          </span>
+          <span>￥{{orderInfo.orderFee}}</span>
         </div>
         <div class="select_pay">
           <p class="pay_des">选择支付方式</p>
-          <div class="select_item">
+          <!-- <div class="select_item">
             <div class="des_box">
               <div class="weixin_i">
                 <i class="iconfont icon-refund now_i"></i>
@@ -108,9 +167,9 @@
               </div>
             </div>
             <div class="check">
-              <c-radio :showType="showType" :name="name" :radioValue="1" v-model="money"></c-radio>
+              <c-radio :showType="showType" name="payType" radioValue="balance" v-model="payType"></c-radio>
             </div>
-          </div>
+          </div>-->
           <div class="select_item">
             <div class="des_box">
               <div class="weixin_i">
@@ -122,23 +181,29 @@
               </div>
             </div>
             <div class="check">
-              <c-radio :showType="showType" :name="name" :radioValue="2" v-model="money"></c-radio>
+              <c-radio name="payType" radioValue="weixin" v-model="payType"></c-radio>
             </div>
           </div>
         </div>
         <div class="pay_btn">
           <c-button @click="pay">支付</c-button>
+          <p style="font-size:0.12rem;color:#777;padding-top:0.05rem;">剩余时间 {{hh}}:{{mm}}:{{ss}}</p>
         </div>
       </div>
     </div>
-    <div class="popup" v-show="popupVisible">
-      <div class="mask"></div>
-      <div class="inner">
-        <div class="header">支付确认</div>
-        <div>吧啦吧啦巴拉巴拉</div>
-        <div>
-          <button>取消</button>
-          <button>确认</button>
+    <div class="popup">
+      <div class="mask" v-show="popupVisible"></div>
+      <div class="COMM_MSGBOX" v-show="popupVisible">
+        <div class="COMM_MSGBOX_FORM">
+          <span class="COMM_MSGBOX_TIP">支付确认</span>
+          <div>
+            <span class="COMM_MSGBOX_CONTENT">1、请在微信内完成支付，如果您已支付成功，请点击“已完成支付”按钮</span>
+            <span class="COMM_MSGBOX_CONTENT">2、如果您还未安装微信6.0.2 及以上版本客户端，请点击"取消"并选择其它支付方式付款</span>
+          </div>
+        </div>
+        <div class="COMM_MSGBOX_ACTION_WRAPPER">
+          <a href="javascript:void(0);" class="COMM_MSGBOX_CANCEL" @click="popupVisible = false;">取消</a>
+          <a href="javascript:void(0);" class="COMM_MSGBOX_OK" @click="getOrderPayStatus(0);popupVisible = false;">已完成支付</a>
         </div>
       </div>
     </div>
@@ -147,42 +212,90 @@
 
 <script>
 import services from "@/services";
+import utils from "@/utils";
 
 export default {
   data() {
     return {
+      payed: false,
+      from: "",
       orderId: "",
+      orderInfo: {},
+      timeId: null,
       popupVisible: false,
-      showType: "radio",
-      name: "pay",
-      money: '1'    //1 微信  2 余额
+      payType: "weixin",
+      hh: "0",
+      mm: "0",
+      ss: "0"
     };
   },
   methods: {
-    payClick(val) {
-      this.paydata = val;
-      console.log(val);
-    },
-    async pay() {
+    async fetchOrderInfo() {
       try {
         let { orderId } = this;
-        let res = await services.payOrder({
+        let res = await services.fetchOrderInfo({
           orderId
         });
 
         if (services.$isError(res)) throw new Error(res.message);
 
-        //查询支付结果
-        this.getOrderPayStatus(0);
-        //弹窗
-        this.popupVisible = true;
+        this.orderInfo = res.data;
+
+        if (this.orderInfo.status != "1") {
+          this.payed = true;
+          this.$toast("订单已支付");
+
+          return this.$router.back();
+        }
+
+        let endTime = new Date(
+          new Date(this.orderInfo.createTime).getTime() + 24 * 60 * 60 * 1000
+        );
+        this.countdown(endTime);
       } catch (err) {
         return this.$toast(err.message);
       }
     },
+
+    // async pay() {
+    //   try {
+    //     let { orderId } = this;
+    //     let res = await services.payOrder({
+    //       orderId
+    //     });
+
+    //     if (services.$isError(res)) throw new Error(res.message);
+
+    //     //查询支付结果
+    //     this.getOrderPayStatus(10);
+    //     //弹窗
+    //     this.popupVisible = true;
+    //   } catch (err) {
+    //     return this.$toast(err.message);
+    //   }
+    // },
+
+    async pay() {
+      try {
+        let { orderId } = this;
+        let res = await services.payOrderCallback({
+          orderId
+        });
+
+        if (services.$isError(res)) throw new Error(res.message);
+
+        this.payed = true;
+        this.$router.replace("/pay-result");
+      } catch (err) {
+        return this.$toast(err.message);
+      }
+    },
+
     //查询支付结果
     async getOrderPayStatus(timer) {
       try {
+        clearTimeout(this.timeId);
+
         let { orderId } = this;
         let res = await services.getOrderPayStatus({
           orderId
@@ -190,28 +303,59 @@ export default {
 
         if (services.$isError(res)) throw new Error(res.message);
 
-        timer++;
+        timer--;
 
         if (res.data.result) {
-          this.$router.go(-(history.length - 1));
-          setTimeout(() => {
-            this.$router.replace({ path: "/", query: { tab: 3 } });
-            this.$router.push("/pay-result");
-          }, 0);
+          this.payed = true;
+          this.$router.replace("/pay-result");
 
           //跳转支付成功页面
-        } else if (timer <= 10) {
-          setTimeout(() => {
+        } else if (timer >= 0) {
+          this.timeId = setTimeout(() => {
             this.getOrderPayStatus(timer);
           }, 3000);
         }
       } catch (err) {
         return this.$toast(err.message);
       }
+    },
+    countdown(endTime) {
+      let { d, h, m, s } = utils.countdown(endTime, "d");
+
+      this.hh = h;
+      this.mm = m;
+      this.ss = s;
+
+      setTimeout(() => {
+        this.countdown(endTime);
+      }, 1000);
     }
   },
   created() {
     this.orderId = this.$route.query.orderId;
+    this.from = this.$route.query.from;
+
+    this.fetchOrderInfo();
+  },
+  async beforeRouteLeave(to, from, next) {
+    if (!this.payed) {
+      let res = await this.$popup.confirm("订单还没支付完成，确定要退出吗？");
+
+      if (res === "confirm") {
+        next();
+
+        if (this.from == "confirmOrder") {
+          //跳转到未付款页面
+          setTimeout(() => {
+            this.$router.push({ path: "/order", query: { status: "1" } });
+          }, 0);
+        }
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
   }
 };
 </script>

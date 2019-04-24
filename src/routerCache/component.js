@@ -9,21 +9,22 @@ export default function (options = {}) {
 
   return {
     props: {
-      cacheId: String
+      cacheId: String,
     },
     data() {
       return {
+        $cid: '',
         $restored: false
       };
     },
     methods: {
       $routerCacheStore() {
         let cacheId = this.cacheId;
-        let version = this.$route.query.v;
+        let parentCid = this.$parent && this.$parent.$cid ? this.$parent.$cid : '';
 
-        if (!(version || cacheId)) return;
+        if (!(parentCid && cacheId)) return;
 
-        version = version + '_' + cacheId;
+        this.$cid = parentCid + '_' + cacheId;
 
         let wrap = options.scrollWrapSelector ? this.$el.querySelector(options.scrollWrapSelector) : this.$el;
         let scrollTop = wrap ? wrap.scrollTop : 0;
@@ -35,9 +36,9 @@ export default function (options = {}) {
         data = JSON.stringify(data);
 
         //监听事件
-        this.$routerCacheOn(version);
+        this.$routerCacheOn(this.$cid);
 
-        sessionStorage.setItem(`${cachePrefix}${version}`, data);
+        sessionStorage.setItem(`${cachePrefix}${this.$cid}`, data);
 
         Object.values(this.$refs).forEach(refs => {
           //refs有可能是单个，也有可以是多个，统一按多个处理
@@ -52,20 +53,20 @@ export default function (options = {}) {
       },
       $routerCacheRestore() {
         let cacheId = this.cacheId;
-        let version = this.$route.query.v;
+        let parentCid = this.$parent && this.$parent.$cid ? this.$parent.$cid : '';
 
-        if (!(version || cacheId)) return this.$restored = false;
+        if (!(parentCid && cacheId)) return this.$restored = false;
 
-        version = version + '_' + cacheId;
+        this.$cid = parentCid + '_' + cacheId;
 
-        let data = sessionStorage.getItem(`${cachePrefix}${version}`);
+        let data = sessionStorage.getItem(`${cachePrefix}${this.$cid}`);
 
         if (data) {
 
           data = JSON.parse(data);
           Object.assign(this.$data, data.data);
 
-          this.$routerCacheCheck(version);
+          this.$routerCacheCheck(this.$cid);
 
           this.$restored = true;
 
@@ -84,7 +85,7 @@ export default function (options = {}) {
           this.$restored = false;
         }
 
-        sessionStorage.removeItem(`${cachePrefix}${version}`);
+        sessionStorage.removeItem(`${cachePrefix}${this.$cid}`);
 
       },
       $routerCacheOn(key) {
@@ -108,21 +109,22 @@ export default function (options = {}) {
         sessionStorage.setItem(watchsKey, JSON.stringify(watchs));
       },
       //把watchs变为task
-      $routerCacheEmit(name) {
+      $routerCacheEmit(name, value) {
         let watchs = sessionStorage.getItem(watchsKey);
         watchs = watchs ? JSON.parse(watchs) : {};
         let tasks = sessionStorage.getItem(tasksKey);
         tasks = tasks ? JSON.parse(tasks) : {};
 
         let watch = watchs[name];
-        let task = tasks[name] || (tasks[name] = []);
+        let task = tasks[name] || (tasks[name] = { arr: [] });
 
+        task.value = value;
 
         if (!watch) return;
 
         watch.forEach(key => {
-          if (task.indexOf(key) === -1) {
-            task.push(key);
+          if (task.arr.indexOf(key) === -1) {
+            task.arr.push(key);
           }
         });
 
@@ -150,9 +152,9 @@ export default function (options = {}) {
             watch.splice(index, 1);
           }
 
-          if (task && (index = task.indexOf(key)) >= 0) {
-            watchEvents[name] && watchEvents[name].call(this);
-            task.splice(index, 1);
+          if (task && (index = task.arr.indexOf(key)) >= 0) {
+            watchEvents[name] && watchEvents[name].call(this, task.value);
+            task.arr.splice(index, 1);
           }
         });
 

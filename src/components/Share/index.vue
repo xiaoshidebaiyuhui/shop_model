@@ -2,71 +2,76 @@
 <style lang="scss" scoped>
 @import "~@/css/var";
 @import "~@/css/mixin";
-// @import "~@/css/co";
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.4s;
+}
+
+.slide-enter,
+.slide-leave-to {
+  opacity: 0.8;
+  transform: translate3d(0, 100%, 0);
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s;
+  transition: all 0.4s;
 }
+
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
 }
+
 .share {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 99;
-  .share_wrap {
+  .share_model {
+    @include mask;
+  }
+  .share_box {
+    z-index: 110;
+    padding: 0.2rem 0.3rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
     width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    .share_model {
-      width: 100%;
-      height: 60%;
-      background: rgba(0, 0, 0, 0.5);
+    background: #fff;
+
+    .share_p {
+      font-size: pxTorem(36);
+      text-align: center;
+      padding-bottom: pxTorem(20);
     }
-    .share_box {
-      width: 100%;
-      height: 40%;
-      background: #fff;
-      padding: pxTorem(40) pxTorem(60) pxTorem(30);
-      position: relative;
-      overflow: auto;
-      
-      .share_p {
-        font-size: pxTorem(36);
-        text-align: center;
-        padding-bottom: pxTorem(20);
-      }
-      .share_line {
-        @include border-bottom(#ccc);
-        margin-top: pxTorem(50);
-      }
+    .share_line {
+      @include border-bottom();
+      margin-top: pxTorem(50);
     }
   }
 }
 </style>
 <style lang="scss">
-// @import url("https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css");
 @import "~@/css/mixin";
 #share_component {
+  display: flex;
+  flex-wrap: wrap;
   .soshm-item {
-    margin: pxTorem(14) pxTorem(10);
-    width: pxTorem(160);
+    margin: 0.1rem 0;
+    width: 33%;
     display: flex;
     flex-direction: column;
     align-items: center;
     .soshm-item-icon {
-      width: 40%;
-      height: 40%;
+      width: 0.35rem;
+      height: 0.35rem;
       img {
         object-fit: cover;
       }
     }
     .soshm-item-text {
+      color:#999;
+      font-size:0.12rem;
+          padding-top: 0.08rem;
       display: block;
     }
   }
@@ -78,18 +83,18 @@
 }
 </style>
 <template>
-  <transition name="fade">
-    <div v-show="shareShow" class="share">
-      <div class="share_wrap">
-        <div class="share_model" @click="shareNone"></div>
-        <div class="share_box">
-          <p class="share_p">分享到</p>
-          <div id="share_component"></div>
-          <div class="share_line"></div>
-        </div>
+  <div class="share">
+    <transition name="fade">
+      <div class="share_model" @click="shareNone" v-show="shareShow"></div>
+    </transition>
+    <transition name="slide">
+      <div class="share_box" v-show="shareShow">
+        <p class="share_p">分享到</p>
+        <div id="share_component"></div>
+        <!-- <div class="share_line"></div> -->
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
 </template>
 
 
@@ -97,27 +102,36 @@
 import soshm from "soshm";
 export default {
   props: {
-    shareShow: false
+    shareShow: {
+      type: Boolean,
+      default: false
+    },
+    pic: {
+      type: String,
+      default: ""
+    },
+    title: {
+      type: String,
+      default: "分享标题"
+    },
+    digest: {
+      type: String,
+      default: ""
+    }
   },
   data() {
     return {};
   },
   methods: {
     share() {
-      // soshm.popIn({
-      //     title: '弹窗分享',
-      //     sites: ['weixin', 'weixintimeline', 'weibo', 'yixin', 'qzone', 'tqq', 'qq']
-      //   });
-
       soshm("#share_component", {
         // url: "",
         // 分享的标题，默认使用document.title
-        title: "此处为测试内容，请勿查看！",
+        title: this.title,
         // 分享的摘要，默认使用<meta name="description" content="">content的值
-        digest: "千万不要点！",
+        digest: this.digest,
         // 分享的图片，默认获取本页面第一个img元素的src
-        pic:
-          "http://gw.alicdn.com/tps/TB14FbAb26H8KJjSspmSuv2WXXa.jpg_140x10000Q75.jpg",
+        pic: this.pic,
         sites: ["weixin", "weixintimeline", "qq", "qzone", "weibo"]
       });
     },

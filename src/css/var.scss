@@ -1,4 +1,25 @@
-$color-primary:#f94a92;
-$color-primary-active:#f84a66;
-$color-primary-disabled:#fba6ce;
-$color-border:rgba(220, 220, 220, 0.4);
+$color-dark:#666;
+$color-dark-active:#666;
+$color-dark-disabled:#666;
+
+$color-light:#eee;
+$color-light-active:#eee;
+$color-light-disabled:#eee;
+
+$color-primary:#ff6b9d;
+$color-primary-active:#ff558f;
+$color-primary-disabled:#ffa4c3;
+
+$color-secondly:#5dbaff;
+$color-secondly-active:#3dacff;
+$color-secondly-disabled:#b4dfff;
+
+$color-primary-gradient:linear-gradient(to right, #ff7c92 0%, #ff60a8 100%);
+$color-primary-gradient-active:linear-gradient(to right, #fd6a82 0%, #f93a90 100%);
+$color-primary-gradient-disabled:linear-gradient(to right, #ffb2bf 0%, #ffa2cc 100%);
+
+$color-success:#24b129;
+$color-success-active:#24b129;
+$color-success-disabled:#24b129;
+
+$color-border:#e8e8e8;

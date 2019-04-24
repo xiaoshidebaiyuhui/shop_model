@@ -1,8 +1,7 @@
 <style lang="scss" scoped>
 @import "~@/css/var";
-.c-page-body {
-  // background: #f3f3f3;
-}
+@import "~@/css/mixin";
+
 input {
   border: 0;
   color: #000;
@@ -13,7 +12,8 @@ ul {
 }
 li {
   padding: 0.1rem 0;
-  border-bottom: 1px solid #f4f4f4;
+  // border-bottom: 1px solid #f4f4f4;
+  @include border-bottom();
 }
 li span:first-of-type {
   width: 20%;
@@ -74,7 +74,7 @@ label {
 }
 </style>
 <template>
-  <div class="recharge-page">
+  <div class="recharge-page page">
     <c-header :title="'账户充值'"></c-header>
     <div class="c-page-body header-pd">
       <ul>

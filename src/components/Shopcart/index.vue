@@ -3,8 +3,8 @@
 @import "~@/css/var";
 .c-shopcart {
   &.in-tab {
-    .c-page-body {
-      padding-bottom: 1.05rem;
+    .padding-wrap {
+      padding-bottom: 1.2rem;
     }
 
     .item_page_footer {
@@ -12,22 +12,22 @@
     }
   }
 
-  .c-page-body {
-    padding-bottom: 0.5rem;
+  .padding-wrap {
+    padding-bottom: 0.75rem;
   }
 
   .list {
     background-color: #fff;
     // margin-top: -1px;
     margin-bottom: 0.4rem;
-    border-top: 1px solid $color-border;
+    @include border-top();
     padding: 0 0.15rem;
   }
 
   .item {
     @include flexbox;
     padding: 0.15rem 0;
-    border-bottom: 1px solid $color-border;
+    @include border-bottom();
 
     .remove-btn {
       float: right;
@@ -55,7 +55,8 @@
     }
 
     .item-name {
-      font-size: 0.12rem;
+      font-size: 0.13rem;
+      font-weight: 500;
       // color: #444;
       max-height: 0.34rem;
       line-height: 0.17rem;
@@ -72,6 +73,13 @@
       color: #777;
     }
 
+    .tag-wrap{
+      .c-tag{
+        margin-top: 0.05rem;
+      }
+      
+    }
+
     .item-prop {
       position: relative;
       background: #f5f5f5;
@@ -80,21 +88,21 @@
       padding: 0.04rem 0.05rem;
       font-size: 0.12rem;
       display: inline-block;
-      padding-right: 0.18rem;
+      // padding-right: 0.18rem;
 
-      &::after {
-        $size: 0.07rem;
-        content: "";
-        position: absolute;
-        top: 50%;
-        right: 0.08rem;
-        transform: translateY(-50%) rotate(45deg);
-        width: $size;
-        height: $size;
-        border: 1px solid #bbb;
-        border-left: 0;
-        border-top: 0;
-      }
+      // &::after {
+      //   $size: 0.07rem;
+      //   content: "";
+      //   position: absolute;
+      //   top: 50%;
+      //   right: 0.08rem;
+      //   transform: translateY(-50%) rotate(45deg);
+      //   width: $size;
+      //   height: $size;
+      //   border: 1px solid #bbb;
+      //   border-left: 0;
+      //   border-top: 0;
+      // }
     }
 
     .item-bottom {
@@ -104,12 +112,13 @@
   }
 
   .item_page_footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     height: pxTorem(100);
-    border-top: 1px solid #eaeaea;
+    // border-top: 1px solid #eaeaea;
+    @include border-top();
     background: rgba(255, 255, 255, 1);
     z-index: 3;
     .item_page_footer_content {
@@ -141,18 +150,22 @@
         color: #999;
       }
 
-
       .footer-btn {
         border: none;
         color: #fff;
         height: 0.5rem;
         min-width: 0.9rem;
-        background: $color-primary;
-        border: 1px solid $color-primary;
+        background: $color-primary-gradient;
+        // border: 1px solid $color-primary;
 
         &:disabled {
-          background: $color-primary-disabled;
-          border: 1px solid $color-primary-disabled;
+          background: $color-primary-gradient-disabled;
+          // border: 1px solid $color-primary-disabled;
+        }
+
+        &:not(:disabled):active {
+          background: $color-primary-gradient-active;
+          // border: 1px solid $color-primary-active;
         }
       }
     }
@@ -163,79 +176,88 @@
 <template>
   <div class="c-shopcart" :class="{'in-tab':inTab}">
     <c-header :title="'购物车'" :backType="inTab? 0 : 1"></c-header>
-    <div class="c-page-body header-pd">
-      <div v-if="!isLogin" style="padding-top:0.4rem;text-align:center;">登录后可以查看购物车
-        <router-link tag="button" to="/login">登录</router-link>
-      </div>
-      <div v-else-if="list && list.length > 0">
-        <div class="list" style="margin-top:0.1rem;">
-          <div class="item" v-for="(shopcart,index) in list" :key="index">
-            <label class="item-checkbox-wrap">
-              <c-checkbox v-model="checkedFlags[shopcart.id]"></c-checkbox>
-            </label>
-            <img class="item-img" :src="shopcart.item.imgList[0]" alt>
-            <div class="item-content">
-              <router-link
-                tag="div"
-                :to="`/items/${shopcart.item.id}`"
-                class="item-name"
-              >{{shopcart.item.name}}</router-link>
-              <div class="item-prop-wrap">
-                <div class="item-prop">{{shopcart.sku.propvalueTextList}}</div>
-              </div>
-
-              <div class="item-bottom">
-                <div class="item-price">￥{{shopcart.sku.price}}</div>
-                <c-number-input
-                  v-model="shopcart.quantity"
-                  :min="1"
-                  @input="updateShopcart(shopcart.id,$event)"
-                ></c-number-input>
-
-                <!-- <i class="iconfont icon-add1"></i> -->
-              </div>
-              <div
-                style="padding-top: 15px;
-                margin-bottom: -15px;
-                overflow: hidden;
-                color: #ccc;"
-              >
-                <i
-                  class="iconfont icon-close_light remove-btn"
-                  @click="removeShopcart(shopcart.id)"
-                ></i>
-              </div>
-            </div>
+    <div class="c-page-body">
+      <div class="padding-wrap c-header-pd">
+        <div v-if="!isLogin" style="padding-top:0.4rem;text-align:center;">亲~ 登录后才可以查看购物车
+          <div style="padding-top:0.2rem;">
+            <router-link tag="button" to="/login" class="c-btn btn-primary">去登录</router-link>
           </div>
         </div>
-        <div class="item_page_footer">
-          <div class="item_page_footer_content chen_center_absolute">
-            <div class="item_page_footer_follow_wrap">
-              <label>
-                <c-checkbox v-model="allChecked" style="margin-left:0.1rem;margin-right:0.08rem;"></c-checkbox>全选
+        <div v-else-if="list && list.length > 0">
+          <div class="list" style="margin-top:-1px;">
+            <div class="item" v-for="(shopcart,index) in list" :key="index">
+              <label class="item-checkbox-wrap">
+                <c-checkbox v-model="checkedFlags[shopcart.id]"></c-checkbox>
               </label>
-              <div class="amount-wrap">
-                <div class="amount">
-                  合计:
-                  <span class="amount-strong">￥{{checkedAmount}}</span>
+              <img class="item-img" v-lazy="shopcart.item.imgList[0]" alt @click="$router.push(`/items/${shopcart.item.id}`)">
+              <div class="item-content">
+                <router-link
+                  tag="div"
+                  :to="`/items/${shopcart.item.id}`"
+                  class="item-name"
+                >{{shopcart.item.name}}</router-link>
+                <div class="item-prop-wrap">
+                  <div class="item-prop">{{shopcart.sku.propvalueTextList}}</div>
                 </div>
-                <div class="hint">不含运费</div>
+                <div class="tag-wrap">
+                  <span class="c-tag" v-if="shopcart.flash && shopcart.flash.status == 1">限时特价</span>
+                </div>
+                <div class="item-bottom">
+                  <div class="item-price" v-if="shopcart.flash && shopcart.flash.status == 1">￥{{shopcart.flash.sku.flashPrice}}</div>
+                  <div class="item-price" v-else>￥{{shopcart.sku.price}}</div>
+                  <c-number-input
+                    v-model="shopcart.quantity"
+                    :min="1"
+                    @input="updateShopcart(shopcart.id,$event)"
+                  ></c-number-input>
+
+                  <!-- <i class="iconfont icon-add1"></i> -->
+                </div>
+                <div
+                  style="padding-top: 15px;
+                  margin-bottom: -15px;
+                  overflow: hidden;
+                  color: #ccc;"
+                >
+                  <i
+                    class="iconfont icon-close_light remove-btn"
+                    @click="removeShopcart(shopcart.id)"
+                  ></i>
+                </div>
               </div>
             </div>
-              <button
-                :disabled="checkedCount === 0"
-                class="footer-btn"
-                @click="submit"
-              >结算({{checkedCount}})</button>
-            <!-- <div class="chen_center_absolute_center item_page_footer_buys_wrap"> -->
-            <!-- </div> -->
+          </div>
+
+        </div>
+
+        <c-empty-hint v-else icon="icon-cart_light" hint="您的购物车是空的哦！">
+          <button v-if="inTab" class="c-btn btn-primary" @click="$emit('gotoHome')">随便逛逛</button>
+        </c-empty-hint>
+        <c-recommend-list ref="recommend" cacheId="recommend" style="margin-top:0.5rem;"></c-recommend-list>
+      </div>
+    </div>
+    <div class="item_page_footer">
+      <div class="item_page_footer_content chen_center_absolute">
+        <div class="item_page_footer_follow_wrap">
+          <label>
+            <c-checkbox v-model="allChecked" style="margin-left:0.1rem;margin-right:0.08rem;"></c-checkbox>全选
+          </label>
+          <div class="amount-wrap">
+            <div class="amount">
+              合计:
+              <span class="amount-strong">￥{{checkedAmount}}</span>
+            </div>
+            <div class="hint">不含运费</div>
           </div>
         </div>
+        <button
+          :disabled="checkedCount === 0"
+          class="footer-btn"
+          @click="submit"
+        >结算({{checkedCount}})</button>
+        <!-- <div class="chen_center_absolute_center item_page_footer_buys_wrap"> -->
+        <!-- </div> -->
       </div>
-
-      <c-empty-hint v-else icon="icon-goods_light" hint="您的购物车是空的哦！">
-        <button @click="$emit('gotoHome')">顺便逛逛</button>
-      </c-empty-hint>
     </div>
   </div>
 </template>
@@ -247,14 +269,13 @@ import services from "@/services";
 import routerCacheComponent from "@/routerCache/component";
 
 export default {
-  mixins:[
+  mixins: [
     routerCacheComponent({
       scrollWrapSelector: ".c-page-body"
     })
   ],
   props: {
     inTab: {
-      
       type: Boolean,
       default: true
     }
@@ -286,7 +307,8 @@ export default {
     },
     checkedAmount() {
       return this.checkedItems.reduce((prev, current) => {
-        return prev + current.sku.price * current.quantity;
+        let price = current.flash &&  current.flash.status == 1? current.flash.sku.flashPrice : current.sku.price;
+        return prev + price * current.quantity;
       }, 0);
     }
   },
@@ -299,6 +321,7 @@ export default {
 
         this.list = res.data;
 
+        this.checkedFlags = {};
         this.list.forEach(item => {
           Vue.set(this.checkedFlags, item.id, false);
         });
@@ -331,6 +354,8 @@ export default {
 
         let index = this.list.findIndex(item => item.id == id);
         this.list.splice(index, 1);
+        Vue.delete(this.checkedFlags,id);
+        this.$nextTick();
         this.$toast(res.message);
       } catch (err) {
         return this.$toast(err.message);
@@ -339,8 +364,6 @@ export default {
 
     submit() {
       console.log(this.checkedItems);
-
-      // let queryData = JSON.stringify(this.checkedItems);
 
       let queryData = [];
 
